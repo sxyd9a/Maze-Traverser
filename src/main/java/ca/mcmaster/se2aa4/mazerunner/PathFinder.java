@@ -16,4 +16,18 @@ public class PathFinder {
         return startPos;
     }
 
+    public int[] determineFinalPos(int [][] maze){
+        int[] finalPos = new int[2];
+
+        finalPos[1] = maze[0].length-1;
+
+        for(int row = maze.length-1; row>=0; row--){
+            if(maze[row][maze[0].length-1] == 1){
+                finalPos[0] = row;
+                break;
+            }             
+        }
+        return finalPos;
+    }
+
 }
