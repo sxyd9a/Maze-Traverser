@@ -21,7 +21,7 @@ public class Main {
         Options cliOptions = new Options();
 
         //Apache Commons Library for parsing cmd line args incorporated below:
-        Option fileOption = Option.builder("i")
+        Option fileOption = Option.builder("i") //Using -i flag
                 .longOpt("input file")
                 .desc("Path to the maze input file")
                 .hasArg()
