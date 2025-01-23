@@ -20,6 +20,7 @@ public class Main {
 
         Options cliOptions = new Options();
 
+        //Apache Commons Library for parsing cmd line args incorporated below:
         Option fileOption = Option.builder("i")
                 .longOpt("input file")
                 .desc("Path to the maze input file")
@@ -46,8 +47,9 @@ public class Main {
                 System.out.println();
             }
 
+        //error handling:
         } catch (ParseException e) {
-            log.error("Failed to parse command-line arguments: " + e.getMessage());
+            log.error("Failed to parse command-line arguments: " + e.getMessage()); 
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("MazeRunner", cliOptions);
         } catch (RuntimeException e) {
