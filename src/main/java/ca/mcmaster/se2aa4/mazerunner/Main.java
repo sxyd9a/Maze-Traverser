@@ -14,6 +14,7 @@ public class Main {
 
     private static final Logger log = LogManager.getLogger();
     private static final MazeReader reader = new MazeReader();
+    private static final PathFinder finder = new PathFinder();
 
     public static void main(String[] args) {
         log.info("** Starting Maze Application");
@@ -46,6 +47,13 @@ public class Main {
                 }
                 System.out.println();
             }
+
+            System.out.println("Below is a path through the maze:");
+            int[] start = finder.determineStartPos(maze);
+            int[] finish = finder.determineFinalPos(maze);
+            System.out.println(start[0]+", "+start[1]);
+            System.out.println(finish[0]+", "+finish[1]);
+            System.out.println(finder.rightHandSearch(maze, start, finish));
 
         //error handling:
         } catch (ParseException e) {

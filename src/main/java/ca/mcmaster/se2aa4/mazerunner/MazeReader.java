@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 public class MazeReader {
 
     private static final Logger log = LogManager.getLogger();
+    private int[][] mazeGrid;
 
     public int[][] loadMaze(String mazeFile) {
         System.out.println("** Initializing Maze Loader");
@@ -29,7 +30,7 @@ public class MazeReader {
 
             fileReader.close();
 
-            int[][] mazeGrid = new int[maxRows][maxCols];
+            mazeGrid = new int[maxRows][maxCols];
 
             BufferedReader reader = new BufferedReader(new FileReader(mazeFile));
             int rowIndex = 0;
@@ -45,8 +46,12 @@ public class MazeReader {
             return mazeGrid;
 
         } catch (IOException e) {
-            log.error("Error loading maze file", e);
+            log.error("Error reading maze file", e);
             return null;
         }
+    }
+
+    public int[][] getMaze(){
+        return mazeGrid;
     }
 }
