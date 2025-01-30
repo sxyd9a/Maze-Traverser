@@ -33,4 +33,6 @@ public abstract class PathFinder {
     public abstract String pathSearch(int[][] maze, int[] startPos, int[] finalPos);
 
     public abstract boolean validMove(int[][] maze, int row, int col);
+
+    public abstract boolean validatePath(int[][] maze, int[] startPos, int[] finalPos, String userPath);
 }
