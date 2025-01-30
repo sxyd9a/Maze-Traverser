@@ -15,6 +15,7 @@ public class Main {
     private static final Logger log = LogManager.getLogger();
     private static final MazeReader reader = new MazeReader();
     private static final PathFinder finder = new RightHandMazeSolver();
+    private static final FactorizedPath factorize = new FactorizedPath();
 
     public static void main(String[] args) {
         log.info("** Starting Maze Application");
@@ -48,10 +49,13 @@ public class Main {
                 System.out.println();
             }
 
-            System.out.println("Below is a path through the maze:");
+            System.out.println("Below is a canonical path through the maze:");
             int[] start = finder.determineStartPos(maze);
             int[] finish = finder.determineFinalPos(maze);
-            System.out.println(finder.pathSearch(maze, start, finish));
+            String canonical = finder.pathSearch(maze, start, finish);
+            System.out.println(canonical);
+            System.out.println("Below is the same path factorized:");
+            System.out.println(factorize.factorizePath(canonical));
 
         //error handling:
         } catch (ParseException e) {
@@ -60,7 +64,6 @@ public class Main {
             formatter.printHelp("MazeRunner", cliOptions);
         } catch (RuntimeException e) {
             log.error("Unexpected error occurred", e);
-            e.printStackTrace();
         }
 
         log.info("**** End of Maze Application");
