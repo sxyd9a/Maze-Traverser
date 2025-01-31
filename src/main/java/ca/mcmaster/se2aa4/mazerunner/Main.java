@@ -78,11 +78,15 @@ public class Main {
                 }
                 System.out.println(check ? "Your path works!" : "Invalid Path!");
             } else{
-                System.out.println("Below is a canonical path through the maze:");
                 String canonical = finder.canonicalPathSearch(maze, start, finish);
-                System.out.println(canonical);
-                System.out.println("Below is the same path factorized:");
-                System.out.println(finder.factorizePath(canonical));
+                if(canonical.isEmpty()){
+                    System.out.println("There is no path through the maze");
+                } else {
+                    System.out.println("Below is a canonical path through the maze:");
+                    System.out.println(canonical);
+                    System.out.println("Below is the same path factorized:");
+                    System.out.println(finder.factorizePath(canonical));
+                }
             }
 
         //error handling:
