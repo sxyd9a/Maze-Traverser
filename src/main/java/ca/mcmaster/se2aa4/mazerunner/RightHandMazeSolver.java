@@ -146,6 +146,14 @@ public class RightHandMazeSolver extends PathFinder {
                 moveCount = 1;
             }
         }
+
+        //append last move group
+        if(moveCount == 1){
+            factorizedPath.append(prevMove);
+        } else {
+            factorizedPath.append(moveCount).append(prevMove);
+        }
+
         return factorizedPath.toString();
     }
 }
