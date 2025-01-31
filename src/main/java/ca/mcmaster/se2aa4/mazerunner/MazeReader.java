@@ -48,10 +48,13 @@ public class MazeReader {
         } catch (IOException e) {
             log.error("Error reading maze file", e);
             return null;
+        } catch (IllegalArgumentException e){
+            log.error("Invalid file format: " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("Unexpected error occurred", e);
         }
+        return null;
     }
 
-    public int[][] getMaze(){
-        return mazeGrid;
-    }
 }
