@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner;
 public class RightHandMazeSolver extends PathFinder {
 
     @Override
-    public String pathSearch(int[][] maze, int[] startPos, int[] finalPos){
+    public String canonicalPathSearch(int[][] maze, int[] startPos, int[] finalPos){
         StringBuilder canonicalPath = new StringBuilder();
 
         int row = startPos[0]; //start at initial position
@@ -140,6 +140,32 @@ public class RightHandMazeSolver extends PathFinder {
     @Override
     public boolean validMove(int[][] maze, int row, int col){ //check whether move is possibe
         return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == 1;
+    }
+
+    @Override
+    public String factorizePath(String canonicalPath) {
+        StringBuilder factorizedPath = new StringBuilder();
+        int fwdCount = 0; 
+
+        for (char move : canonicalPath.toCharArray()) {
+            if (move == 'F') { //If a forwar movement is found, count it
+                fwdCount++;
+            } else {
+                //Append total number of forward movements to path before appeding the next turning movement
+                if (fwdCount > 0) {
+                    factorizedPath.append(fwdCount).append("F");
+                    fwdCount = 0;
+                }
+                factorizedPath.append(move);
+            }
+        }
+
+        //If the path ends in forward movements, append them at the end
+        if (fwdCount > 0) {
+            factorizedPath.append(fwdCount).append("F");
+        }
+
+        return factorizedPath.toString();
     }
 
 }

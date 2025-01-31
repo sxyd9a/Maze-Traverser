@@ -30,9 +30,11 @@ public abstract class PathFinder {
         return finalPos;
     }
 
-    public abstract String pathSearch(int[][] maze, int[] startPos, int[] finalPos);
+    public abstract String canonicalPathSearch(int[][] maze, int[] startPos, int[] finalPos);
 
     public abstract boolean validMove(int[][] maze, int row, int col);
 
     public abstract boolean validatePath(int[][] maze, int[] startPos, int[] finalPos, String userPath);
+
+    public abstract String factorizePath(String canonicalPath);
 }

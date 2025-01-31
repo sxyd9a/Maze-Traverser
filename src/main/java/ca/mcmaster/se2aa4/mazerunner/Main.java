@@ -15,7 +15,6 @@ public class Main {
     private static final Logger log = LogManager.getLogger();
     private static final MazeReader reader = new MazeReader();
     private static final PathFinder finder = new RightHandMazeSolver();
-    private static final FactorizedPath factorize = new FactorizedPath();
 
     public static void main(String[] args) {
         log.info("** Starting Maze Application");
@@ -72,7 +71,7 @@ public class Main {
                 }
                 boolean check;
                 if(!alrdyFactorzd){
-                    check = finder.validatePath(maze, start, finish, factorize.factorizePath(userPath));
+                    check = finder.validatePath(maze, start, finish, finder.factorizePath(userPath));
                 }
                 else{
                     check = finder.validatePath(maze, start, finish, userPath);
@@ -80,10 +79,10 @@ public class Main {
                 System.out.println(check ? "Your path works!" : "Invalid Path!");
             } else{
                 System.out.println("Below is a canonical path through the maze:");
-                String canonical = finder.pathSearch(maze, start, finish);
+                String canonical = finder.canonicalPathSearch(maze, start, finish);
                 System.out.println(canonical);
                 System.out.println("Below is the same path factorized:");
-                System.out.println(factorize.factorizePath(canonical));
+                System.out.println(finder.factorizePath(canonical));
             }
 
         //error handling:
