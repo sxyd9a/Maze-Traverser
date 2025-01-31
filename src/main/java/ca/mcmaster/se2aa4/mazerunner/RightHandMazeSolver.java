@@ -94,7 +94,7 @@ public class RightHandMazeSolver extends PathFinder {
             char move = userPath.charAt(i);
 
             if(Character.isDigit(move)){
-                fwds = move;
+                fwds = Character.getNumericValue(move);
             }
             else if(move == 'F'){
                 for(int j = 0; j<fwds; j++){
