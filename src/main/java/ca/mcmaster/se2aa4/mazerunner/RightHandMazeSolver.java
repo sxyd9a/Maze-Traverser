@@ -134,12 +134,12 @@ public class RightHandMazeSolver extends PathFinder {
             i++;
         }
 
-        return row == finalPos[0] && col == finalPos[1] ? true : false;
+        return row == finalPos[0] && col == finalPos[1];
     }
     
     @Override
     public boolean validMove(int[][] maze, int row, int col){ //check whether move is possibe
-        return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == 1 ? true : false;
+        return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == 1;
     }
 
 }

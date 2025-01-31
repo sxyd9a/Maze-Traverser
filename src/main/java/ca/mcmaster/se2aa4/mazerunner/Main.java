@@ -23,7 +23,7 @@ public class Main {
         Options cliOptions = new Options();
 
         //Apache Commons Library for parsing cmd line args incorporated below:
-        Option fileOption = Option.builder("i") //Using -i flag
+        Option fileOption = Option.builder("i") //Using -i flag to input a path to the maze file
                 .longOpt("input file")
                 .desc("Path to the maze input file")
                 .hasArg()
@@ -31,6 +31,15 @@ public class Main {
                 .required(true)
                 .build();
         cliOptions.addOption(fileOption);
+
+        Option pathOption = Option.builder("p") //Using -p flag to check if a path through the maze inputted by the user is correct
+                .longOpt("path")
+                .desc("Path inputted by user for validation check")
+                .hasArg()
+                .argName("PATH")
+                .required(false)
+                .build();
+        cliOptions.addOption(pathOption);
 
         CommandLineParser cmdParser = new DefaultParser();
 
@@ -49,13 +58,33 @@ public class Main {
                 System.out.println();
             }
 
-            System.out.println("Below is a canonical path through the maze:");
             int[] start = finder.determineStartPos(maze);
             int[] finish = finder.determineFinalPos(maze);
-            String canonical = finder.pathSearch(maze, start, finish);
-            System.out.println(canonical);
-            System.out.println("Below is the same path factorized:");
-            System.out.println(factorize.factorizePath(canonical));
+
+            if(cmd.hasOption("p")){
+                String userPath = cmd.getOptionValue("p");
+                boolean alrdyFactorzd = false;
+                for(int i = 0; i<userPath.length(); i++){
+                    if(Character.isDigit(userPath.charAt(i))){
+                        alrdyFactorzd = true; 
+                        break;
+                    }
+                }
+                boolean check;
+                if(!alrdyFactorzd){
+                    check = finder.validatePath(maze, start, finish, factorize.factorizePath(userPath));
+                }
+                else{
+                    check = finder.validatePath(maze, start, finish, userPath);
+                }
+                System.out.println(check ? "Your path works!" : "Invalid Path!");
+            } else{
+                System.out.println("Below is a canonical path through the maze:");
+                String canonical = finder.pathSearch(maze, start, finish);
+                System.out.println(canonical);
+                System.out.println("Below is the same path factorized:");
+                System.out.println(factorize.factorizePath(canonical));
+            }
 
         //error handling:
         } catch (ParseException e) {
