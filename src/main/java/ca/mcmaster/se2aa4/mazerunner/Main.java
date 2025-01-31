@@ -93,6 +93,9 @@ public class Main {
             formatter.printHelp("MazeRunner", cliOptions);
         } catch (RuntimeException e) {
             log.error("Unexpected error occurred", e);
+        } catch (OutOfMemoryError e) {
+            log.error("Memory Overflow - Maze has no entry/exit points");
+            System.out.println("Maze is unsolvable");
         }
 
         log.info("**** End of Maze Application");
