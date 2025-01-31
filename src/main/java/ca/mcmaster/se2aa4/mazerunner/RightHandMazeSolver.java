@@ -17,21 +17,13 @@ public class RightHandMazeSolver extends PathFinder {
             
             int rightDir;
             switch (currDirection) { //Check which ever direction is to the right of the current direction
-                case 0:
-                    rightDir = 1;
-                    break;
-                case 1:
-                    rightDir = 2;
-                    break;
-                case 2:
-                    rightDir = 3;
-                    break;
-                case 3:
-                    rightDir = 0;
-                    break;
-                default:
-                    throw new IllegalStateException("Invalid direction: " + currDirection);
+                case 0 -> rightDir = 1;
+                case 1 -> rightDir = 2;
+                case 2 -> rightDir = 3;
+                case 3 -> rightDir = 0;
+                default -> throw new IllegalStateException("Invalid direction: " + currDirection);
             }
+            //Check which ever direction is to the right of the current direction
 
             int rightRow = row + directions[rightDir][0];
             int rightCol = col + directions[rightDir][1];
@@ -55,21 +47,13 @@ public class RightHandMazeSolver extends PathFinder {
                 else{
                     int leftDir;
                     switch (currDirection) { //check if turning let is possible
-                        case 0:
-                            leftDir = 3;
-                            break;
-                        case 1:
-                            leftDir = 0;
-                            break;
-                        case 2:
-                            leftDir = 1;
-                            break;
-                        case 3:
-                            leftDir = 2;
-                            break;
-                        default:
-                            throw new IllegalStateException("Invalid direction: " + currDirection);
+                        case 0 -> leftDir = 3;
+                        case 1 -> leftDir = 0;
+                        case 2 -> leftDir = 1;
+                        case 3 -> leftDir = 2;
+                        default -> throw new IllegalStateException("Invalid direction: " + currDirection);
                     }
+                    //check if turning let is possible
                     currDirection = leftDir;
                     canonicalPath.append("L");
                 }
@@ -145,27 +129,23 @@ public class RightHandMazeSolver extends PathFinder {
     @Override
     public String factorizePath(String canonicalPath) {
         StringBuilder factorizedPath = new StringBuilder();
-        int fwdCount = 0; 
+        int moveCount = 0;
+        char prevMove = canonicalPath.charAt(0);
 
-        for (char move : canonicalPath.toCharArray()) {
-            if (move == 'F') { //If a forwar movement is found, count it
-                fwdCount++;
-            } else {
-                //Append total number of forward movements to path before appeding the next turning movement
-                if (fwdCount > 0) {
-                    factorizedPath.append(fwdCount).append("F");
-                    fwdCount = 0;
+        for(char move : canonicalPath.toCharArray()){
+            if(move == prevMove){
+                moveCount++;
+            }
+            else{
+                if(moveCount == 1){
+                    factorizedPath.append(prevMove);
+                } else {
+                    factorizedPath.append(moveCount).append(prevMove);
                 }
-                factorizedPath.append(move);
+                prevMove = move;
+                moveCount = 1;
             }
         }
-
-        //If the path ends in forward movements, append them at the end
-        if (fwdCount > 0) {
-            factorizedPath.append(fwdCount).append("F");
-        }
-
         return factorizedPath.toString();
     }
-
 }
