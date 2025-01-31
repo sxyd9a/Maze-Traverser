@@ -73,43 +73,75 @@ public class RightHandMazeSolver extends PathFinder {
         int currDirection = 1;
 
         int i = 0;
-        int fwds = 0;
+        int motions = 0;
         while(i<userPath.length()){
             char move = userPath.charAt(i);
 
             if(Character.isDigit(move)){
-                fwds = Character.getNumericValue(move);
+                motions = Character.getNumericValue(move);
             }
             else if(move == 'F'){
-                for(int j = 0; j<fwds; j++){
-                    int newRow = row + directions[currDirection][0];
-                    int newCol = col + directions[currDirection][1];
-
-                    if(!validMove(maze, newRow, newCol)){
-                        return false;
+                if(motions > 0){
+                    for(int j = 0; j<motions; j++){
+                        int newRow = row + directions[currDirection][0];
+                        int newCol = col + directions[currDirection][1];
+    
+                        if(!validMove(maze, newRow, newCol)){
+                            return false;
+                        }
+    
+                        row = newRow;
+                        col = newCol;
                     }
-
-                    row = newRow;
-                    col = newCol;
+                    motions = 0;
+                } else {
+                    row += directions[currDirection][0];
+                    col += directions[currDirection][1];
                 }
 
             }
             else if(move == 'R'){
-                switch (currDirection) { //Get right direction
-                    case 0 -> currDirection = 1;
-                    case 1 -> currDirection = 2;
-                    case 2 -> currDirection = 3;
-                    case 3 -> currDirection = 0;
-                    default -> throw new IllegalStateException("Invalid direction: " + currDirection);
+                if(motions>0){
+                    for(int j = 0; j<motions; j++){
+                        switch (currDirection) { //Get right direction
+                            case 0 -> currDirection = 1;
+                            case 1 -> currDirection = 2;
+                            case 2 -> currDirection = 3;
+                            case 3 -> currDirection = 0;
+                            default -> throw new IllegalStateException("Invalid direction: " + currDirection);
+                        }
+                    }
+                    motions = 0;
+                } else {
+                    switch (currDirection) { 
+                        case 0 -> currDirection = 1;
+                        case 1 -> currDirection = 2;
+                        case 2 -> currDirection = 3;
+                        case 3 -> currDirection = 0;
+                        default -> throw new IllegalStateException("Invalid direction: " + currDirection);
+                    }
                 }
             }
             else if(move == 'L'){
-                switch (currDirection) { //Get left direction
-                    case 0 -> currDirection = 3;
-                    case 1 -> currDirection = 0;
-                    case 2 -> currDirection = 1;
-                    case 3 -> currDirection = 2;
-                    default -> throw new IllegalStateException("Invalid direction: " + currDirection);
+                if(motions>0){
+                    for(int j = 0; j<motions; j++){
+                        switch (currDirection) { //Get left direction
+                            case 0 -> currDirection = 3;
+                            case 1 -> currDirection = 0;
+                            case 2 -> currDirection = 1;
+                            case 3 -> currDirection = 2;
+                            default -> throw new IllegalStateException("Invalid direction: " + currDirection);
+                        }
+                    }
+                    motions = 0;
+                } else {
+                    switch (currDirection) { 
+                        case 0 -> currDirection = 3;
+                        case 1 -> currDirection = 0;
+                        case 2 -> currDirection = 1;
+                        case 3 -> currDirection = 2;
+                        default -> throw new IllegalStateException("Invalid direction: " + currDirection);
+                    }
                 }
             }
             else{
