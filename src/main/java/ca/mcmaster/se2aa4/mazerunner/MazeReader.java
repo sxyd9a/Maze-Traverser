@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 public class MazeReader {
 
     private static final Logger log = LogManager.getLogger();
-    private int[][] mazeGrid;
+    private int[][] mazeGrid; //store the maze
 
-    public int[][] loadMaze(String mazeFile) {
+    public int[][] loadMaze(String mazeFile) { //method to lad text file into maze array
         System.out.println("** Initializing Maze Loader");
 
         try {
@@ -23,19 +23,19 @@ public class MazeReader {
             int maxCols = 0;
             String line;
 
-            while ((line = fileReader.readLine()) != null) {
+            while ((line = fileReader.readLine()) != null) { //determining maze boundries
                 maxRows++;
                 maxCols = Math.max(maxCols, line.length());
             }
 
             fileReader.close();
 
-            mazeGrid = new int[maxRows][maxCols];
+            mazeGrid = new int[maxRows][maxCols]; //creating grid based on max rows and cols
 
             BufferedReader reader = new BufferedReader(new FileReader(mazeFile));
             int rowIndex = 0;
 
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) { //Storing an empty space as a 1 and a wall as a 0 in a 2D array
                 for (int colIndex = 0; colIndex < line.length(); colIndex++) {
                     mazeGrid[rowIndex][colIndex] = (line.charAt(colIndex) == ' ') ? 1 : 0;
                 }
@@ -45,13 +45,13 @@ public class MazeReader {
             reader.close();
             return mazeGrid;
 
-        } catch (IOException e) {
+        } catch (IOException e) { //Error interpreting the text file
             log.error("Error reading maze file", e);
             return null;
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e){ //File itself is not correctly formatted
             log.error("Invalid file format: " + e.getMessage());
             System.err.println("Error: " + e.getMessage());
-        } catch (RuntimeException e) {
+        } catch (RuntimeException e) { //Unidentified Error
             log.error("Unexpected error occurred", e);
         }
         return null;

@@ -23,28 +23,27 @@ public class RightHandMazeSolver extends PathFinder {
                 case 3 -> rightDir = 0;
                 default -> throw new IllegalStateException("Invalid direction: " + currDirection);
             }
-            //Check which ever direction is to the right of the current direction
 
-            int rightRow = row + directions[rightDir][0];
-            int rightCol = col + directions[rightDir][1];
+            int rightRow = row + directions[rightDir][0]; //Determine row to the right
+            int rightCol = col + directions[rightDir][1]; //Determine column to the right
 
             if(validMove(maze, rightRow, rightCol)){ //check if turning right and moving forward is possible
-                currDirection = rightDir;
+                currDirection = rightDir; //Set new direction faced
                 row = rightRow;
                 col = rightCol;
                 canonicalPath.append("R");
                 canonicalPath.append("F");
             }
-            else {
-                int forwardRow = row + directions[currDirection][0];
-                int forwardCol = col + directions[currDirection][1];
+            else { //check if just moving forward is possible
+                int forwardRow = row + directions[currDirection][0]; //Determine row directly ahead
+                int forwardCol = col + directions[currDirection][1]; //Determine column directly ahead
 
                 if(validMove(maze, forwardRow, forwardCol)){ //check if moving forward is possible
                     row = forwardRow;
                     col = forwardCol;
                     canonicalPath.append("F");
                 }
-                else{
+                else{ 
                     int leftDir;
                     switch (currDirection) { //check if turning let is possible
                         case 0 -> leftDir = 3;
@@ -54,7 +53,7 @@ public class RightHandMazeSolver extends PathFinder {
                         default -> throw new IllegalStateException("Invalid direction: " + currDirection);
                     }
                     //check if turning let is possible
-                    currDirection = leftDir;
+                    currDirection = leftDir; //Set new direction
                     canonicalPath.append("L");
                 }
             }
@@ -72,38 +71,40 @@ public class RightHandMazeSolver extends PathFinder {
 
         int currDirection = 1;
 
-        int i = 0;
-        int motions = 0;
+        int i = 0; //index to track which part of user's path we're on
+        int motions = 0; //tracking the number of forward, left or right movements at a time
         while(i<userPath.length()){
-            char move = userPath.charAt(i);
+            char move = userPath.charAt(i); //hold current part of path
 
-            if(Character.isDigit(move)){
+            if(Character.isDigit(move)){ //If a number is encountered, set it to be the number of movements needed
                 motions = Character.getNumericValue(move);
             }
-            else if(move == 'F'){
-                if(motions > 0){
-                    for(int j = 0; j<motions; j++){
-                        int newRow = row + directions[currDirection][0];
+            else if(move == 'F'){ //Handle case we're a forward signal is met
+                if(motions > 0){ //Multiple forward movements:
+                    for(int j = 0; j<motions; j++){ //Conduct each forward movement seperately
+                        //Determine placement ahead
+                        int newRow = row + directions[currDirection][0]; 
                         int newCol = col + directions[currDirection][1];
     
-                        if(!validMove(maze, newRow, newCol)){
+                        if(!validMove(maze, newRow, newCol)){ //Check if motion is doable
                             return false;
                         }
     
+                        //set new position
                         row = newRow;
                         col = newCol;
                     }
-                    motions = 0;
-                } else {
+                    motions = 0; //reset motions to 0 for next group
+                } else { //Singular forward movement
                     row += directions[currDirection][0];
                     col += directions[currDirection][1];
                 }
 
             }
-            else if(move == 'R'){
-                if(motions>0){
+            else if(move == 'R'){ //Handle case where a right signal is met
+                if(motions>0){ //Multiple right turns:
                     for(int j = 0; j<motions; j++){
-                        switch (currDirection) { //Get right direction
+                        switch (currDirection) { //Get corresponding right direction
                             case 0 -> currDirection = 1;
                             case 1 -> currDirection = 2;
                             case 2 -> currDirection = 3;
@@ -111,8 +112,8 @@ public class RightHandMazeSolver extends PathFinder {
                             default -> throw new IllegalStateException("Invalid direction: " + currDirection);
                         }
                     }
-                    motions = 0;
-                } else {
+                    motions = 0; //reset motions to 0 for next group
+                } else { //Singular right turn
                     switch (currDirection) { 
                         case 0 -> currDirection = 1;
                         case 1 -> currDirection = 2;
@@ -122,10 +123,10 @@ public class RightHandMazeSolver extends PathFinder {
                     }
                 }
             }
-            else if(move == 'L'){
-                if(motions>0){
+            else if(move == 'L'){ //Handle case where a left signal is met
+                if(motions>0){ //Multiple left turns:
                     for(int j = 0; j<motions; j++){
-                        switch (currDirection) { //Get left direction
+                        switch (currDirection) { //Get corresponding left direction
                             case 0 -> currDirection = 3;
                             case 1 -> currDirection = 0;
                             case 2 -> currDirection = 1;
@@ -133,8 +134,8 @@ public class RightHandMazeSolver extends PathFinder {
                             default -> throw new IllegalStateException("Invalid direction: " + currDirection);
                         }
                     }
-                    motions = 0;
-                } else {
+                    motions = 0; //Reset motions to 0 for next group
+                } else { //Singular left turn
                     switch (currDirection) { 
                         case 0 -> currDirection = 3;
                         case 1 -> currDirection = 0;
@@ -160,22 +161,22 @@ public class RightHandMazeSolver extends PathFinder {
 
     @Override
     public String factorizePath(String canonicalPath) {
-        StringBuilder factorizedPath = new StringBuilder();
-        int moveCount = 0;
-        char prevMove = canonicalPath.charAt(0);
+        StringBuilder factorizedPath = new StringBuilder(); //store factorized version of path
+        int moveCount = 0; //count each move regardless of type
+        char prevMove = canonicalPath.charAt(0); //store the previous made move
 
-        for(char move : canonicalPath.toCharArray()){
-            if(move == prevMove){
+        for(char move : canonicalPath.toCharArray()){ //Iterate through each character in the canonical path
+            if(move == prevMove){ //If the current move is the same as prior, assume we are counting one group
                 moveCount++;
             }
-            else{
-                if(moveCount == 1){
+            else{ //Add a completed group to the factorized path
+                if(moveCount == 1){ //If the previous group (forward, right, or left) was one movement, no need to append a count
                     factorizedPath.append(prevMove);
                 } else {
-                    factorizedPath.append(moveCount).append(prevMove);
+                    factorizedPath.append(moveCount).append(prevMove); //Otherwise append both the number of movements and the type of motion corresponding to the group
                 }
-                prevMove = move;
-                moveCount = 1;
+                prevMove = move; //Set previous move to the move most recently made for next group
+                moveCount = 1; //Count current iteration as a move
             }
         }
 
