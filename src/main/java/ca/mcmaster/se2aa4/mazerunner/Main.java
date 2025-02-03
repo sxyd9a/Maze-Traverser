@@ -10,6 +10,10 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+//Name: Syed Abbas
+//Project: A1 (Maze Path Finder)
+//Date: 02/02/2025
+
 public class Main {
 
     private static final Logger log = LogManager.getLogger();
