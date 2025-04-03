@@ -5,10 +5,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveCommand;
-import ca.mcmaster.se2aa4.mazerunner.command.MazeCommandInvoker;
-import ca.mcmaster.se2aa4.mazerunner.command.SolveMazeCommand;
-import ca.mcmaster.se2aa4.mazerunner.command.ValidatePathCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.SolveMaze;
+import ca.mcmaster.se2aa4.mazerunner.command.ValidatePath;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeReader;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverFactory;
@@ -17,59 +15,39 @@ import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 public class Main {
 
     private static final Logger log = LogManager.getLogger();
-
     private static final MazeReader reader = new MazeReader();
-
-    //parse cli arguments
     private static final ArgumentProcessor argumentProcessor = new ArgumentProcessor();
-
-    //Holds the current maze-solving strategy
-    private static MazeSolverStrategy solver;
 
     public static void main(String[] args) {
         log.info("** Starting Maze Application");
 
         try {
-            //parser tracking
             CommandLine cmd = argumentProcessor.parseArguments(args);
-
-            //Get maze file path and solver strategy
             String mazePath = cmd.getOptionValue("i");
+
+            // Default to RHS if user specified a path but no solver
             String strategy = cmd.getOptionValue("s");
+            if (strategy == null && cmd.hasOption("p")) {
+                strategy = "rhs";
+            }
 
-            //Use factory to match with correct solver strategy
-            solver = MazeSolverFactory.getSolver(strategy);
-
-            //Load maze into a 2D array
+            MazeSolverStrategy solver = MazeSolverFactory.getSolver(strategy);
             TileType[][] maze = reader.loadMaze(mazePath);
-
             printMaze(maze);
 
-            //determine maze starting and ending positions
             int[] start = solver.determineStartPos(maze);
             int[] finish = solver.determineFinalPos(maze);
 
-            MazeCommandInvoker invoker = new MazeCommandInvoker();
-
-            //If a path is provided, validate. Otherwise, solve the maze path
             if (cmd.hasOption("p")) {
-                MazeMoveCommand validate = new ValidatePathCommand(solver, maze, start, finish, cmd.getOptionValue("p"));
-                invoker.setCommand(validate);
+                ValidatePath validateCommand = new ValidatePath(solver, maze, start, finish, cmd.getOptionValue("p"));
+                validateCommand.completeValidation();
             } else {
-                MazeMoveCommand solve = new SolveMazeCommand(solver, maze, start, finish);
-                invoker.setCommand(solve);
+                SolveMaze solveCommand = new SolveMaze(solver, maze, start, finish);
+                solveCommand.completePath();
             }
 
-            invoker.runCommand();
-
-        } catch (ParseException e) {
-            //Error when parsing CLI arguments
-            log.error("Argument parsing failed: {}", e.getMessage());
-            System.err.println("Error: " + e.getMessage());
-            argumentProcessor.printHelp();
-        } catch (IllegalArgumentException e) {
-            //Error when factory is given an invalid solver strategy
-            log.error("Invalid input: {}", e.getMessage());
+        } catch (ParseException | IllegalArgumentException e) {
+            log.error("Error occurred: {}", e.getMessage());
             System.err.println("Error: " + e.getMessage());
             argumentProcessor.printHelp();
         }
@@ -77,7 +55,6 @@ public class Main {
         log.info("**** End of Maze Application");
     }
 
-    //Prints layout of maze on console for user
     private static void printMaze(TileType[][] maze) {
         System.out.println("**** Maze Layout ****");
         for (TileType[] row : maze) {

@@ -42,7 +42,7 @@ public class ArgumentProcessor {
                 .desc("Maze solving strategy to use (rhs or bfs)")
                 .hasArg()
                 .argName("SOLVER")
-                .required(true) 
+                .required(false) //optional command for selecting search strategy
                 .build();
         options.addOption(solverOption);
 

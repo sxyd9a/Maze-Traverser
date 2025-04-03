@@ -10,12 +10,13 @@ public class TurnRightCommand implements MazeMoveCommand {
 
     @Override
     public void execute() {
-        prevDirection = context.direction;
-        context.direction = (context.direction + 1) % 4;
+        prevDirection = context.getDirection();
+        int newDir = (prevDirection + 1) % 4;
+        context.setDirection(newDir);
     }
 
     @Override
     public void undo() {
-        context.direction = prevDirection;
+        context.setDirection(prevDirection);
     }
 }

@@ -12,38 +12,38 @@ import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 public class RightHandMazeSolver implements MazeSolverStrategy {
 
     @Override
-    public String canonicalPathSearch(TileType[][] maze, int[] startPos, int[] finalPos){
+    public String canonicalPathSearch(TileType[][] maze, int[] startPos, int[] finalPos) {
         StringBuilder canonicalPath = new StringBuilder();
 
-        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); //start East
+        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); // Start facing East
         MazeMoveHistory history = new MazeMoveHistory();
         int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
-        while (!(context.row == finalPos[0] && context.col == finalPos[1])) {
-            int rightDir = (context.direction + 1) % 4;
-            int rightRow = context.row + directions[rightDir][0];
-            int rightCol = context.col + directions[rightDir][1];
+        while (!(context.getRow() == finalPos[0] && context.getCol() == finalPos[1])) {
+            int rightDir = (context.getDirection() + 1) % 4;
+            int rightRow = context.getRow() + directions[rightDir][0];
+            int rightCol = context.getCol() + directions[rightDir][1];
 
             if (MazeUtils.validMove(maze, rightRow, rightCol)) {
                 MazeMoveCommand turnRight = new TurnRightCommand(context);
                 MazeMoveCommand moveForward = new MoveForwardCommand(context);
-                turnRight.execute();
-                moveForward.execute();
+                context.executeCommand(turnRight);
+                context.executeCommand(moveForward);
                 history.push(turnRight);
                 history.push(moveForward);
                 canonicalPath.append("R").append("F");
             } else {
-                int forwardRow = context.row + directions[context.direction][0];
-                int forwardCol = context.col + directions[context.direction][1];
+                int forwardRow = context.getRow() + directions[context.getDirection()][0];
+                int forwardCol = context.getCol() + directions[context.getDirection()][1];
 
                 if (MazeUtils.validMove(maze, forwardRow, forwardCol)) {
                     MazeMoveCommand moveForward = new MoveForwardCommand(context);
-                    moveForward.execute();
+                    context.executeCommand(moveForward);
                     history.push(moveForward);
                     canonicalPath.append("F");
                 } else {
                     MazeMoveCommand turnLeft = new TurnLeftCommand(context);
-                    turnLeft.execute();
+                    context.executeCommand(turnLeft);
                     history.push(turnLeft);
                     canonicalPath.append("L");
                 }
@@ -53,11 +53,10 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
         return canonicalPath.toString();
     }
 
-
     @Override
     public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath) {
-        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); //start facing East
-        MazeMoveHistory history = new MazeMoveHistory(); //store executed commands
+        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); // Start facing East
+        MazeMoveHistory history = new MazeMoveHistory();
         int motions = 0;
 
         for (int i = 0; i < userPath.length(); i++) {
@@ -78,14 +77,16 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
                     default -> null;
                 };
 
-                if (command == null) return false;
+                if (command == null) {
+                    return false;
+                } 
 
-                command.execute();
-                history.push(command); 
+                context.executeCommand(command);
+                history.push(command);
 
-                if (move == 'F' && !MazeUtils.validMove(maze, context.row, context.col)) {
+                if (move == 'F' && !MazeUtils.validMove(maze, context.getRow(), context.getCol())) {
                     while (!history.isEmpty()) {
-                        history.pop().undo();
+                        context.undoCommand(history.pop());
                     }
                     return false;
                 }
@@ -94,10 +95,8 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
             motions = 0;
         }
 
-        return context.row == finalPos[0] && context.col == finalPos[1];
+        return context.getRow() == finalPos[0] && context.getCol() == finalPos[1];
     }
-
-
 
     @Override
     public String factorizePath(String canonicalPath) {
