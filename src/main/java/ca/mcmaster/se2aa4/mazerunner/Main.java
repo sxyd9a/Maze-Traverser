@@ -24,12 +24,12 @@ public class Main {
             CommandLine cmd = argumentProcessor.parseArguments(args);
 
             String mazePath = cmd.getOptionValue("i");
-            int[][] maze = reader.loadMaze(mazePath); // Load the maze into a 2D array
+            TileType[][] maze = reader.loadMaze(mazePath); //Load the maze into a 2D array of TileType
 
             System.out.println("**** Maze Layout ****");
-            for (int[] row : maze) { // Print maze as a grid of 1s and 0s
-                for (int cell : row) {
-                    System.out.print(cell + " ");
+            for (TileType[] row : maze) { //Print maze using OPEN and WALL
+                for (TileType cell : row) {
+                    System.out.print(cell == TileType.OPEN ? " " : "#"); //Show space for open, # for wall
                 }
                 System.out.println();
             }
@@ -37,35 +37,35 @@ public class Main {
             int[] start = finder.determineStartPos(maze);
             int[] finish = finder.determineFinalPos(maze);
 
-            if (cmd.hasOption("p")) { // Case when user inputs a path to be checked
+            if (cmd.hasOption("p")) { //Case when user inputs a path to be checked
                 String userPath = cmd.getOptionValue("p");
                 boolean alrdyFactorzd = false;
-                for (int i = 0; i < userPath.length(); i++) { // Check if the path has already been factorized
+                for (int i = 0; i < userPath.length(); i++) { //Check if the path has already been factorized
                     if (Character.isDigit(userPath.charAt(i))) {
                         alrdyFactorzd = true;
                         break;
                     }
                 }
                 boolean check;
-                if (!alrdyFactorzd) { // If inputted path not factorized, do so and then validate
+                if (!alrdyFactorzd) { //If inputted path not factorized, do so and then validate
                     check = finder.validatePath(maze, start, finish, finder.factorizePath(userPath));
                 } else {
                     check = finder.validatePath(maze, start, finish, userPath);
                 }
                 System.out.println(check ? "Your path works!" : "Invalid Path!");
-            } else { // Case where user wants to find a path through the maze
-                String canonical = finder.canonicalPathSearch(maze, start, finish); // Store canonical path
-                if (canonical.isEmpty()) { // Print message when no path is found
+            } else { //Case where user wants to find a path through the maze
+                String canonical = finder.canonicalPathSearch(maze, start, finish); //Store canonical path
+                if (canonical.isEmpty()) { //Print message when no path is found
                     System.out.println("There is no path through the maze");
                 } else {
                     System.out.println("Below is a canonical path through the maze:");
                     System.out.println(canonical);
                     System.out.println("Below is the same path factorized:");
-                    System.out.println(finder.factorizePath(canonical)); // Print factorized path
+                    System.out.println(finder.factorizePath(canonical)); //Print factorized path
                 }
             }
 
-        } catch (ParseException e) { // Handle errors in argument parsing or runtime
+        } catch (ParseException e) { //Handle errors in argument parsing or runtime
             log.error("Error occurred", e);
             argumentProcessor.printHelp();
         }

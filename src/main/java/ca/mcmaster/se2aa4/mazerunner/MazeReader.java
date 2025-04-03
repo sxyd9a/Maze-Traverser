@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 public class MazeReader {
 
     private static final Logger log = LogManager.getLogger();
-    private int[][] mazeGrid; //store the maze
+    private TileType[][] mazeGrid; //store the maze
 
-    public int[][] loadMaze(String mazeFile) { //method to lad text file into maze array
+    public TileType[][] loadMaze(String mazeFile) { //method to load text file into maze array
         System.out.println("** Initializing Maze Loader");
 
         try {
@@ -23,21 +23,21 @@ public class MazeReader {
             int maxCols = 0;
             String line;
 
-            while ((line = fileReader.readLine()) != null) { //determining maze boundries
+            while ((line = fileReader.readLine()) != null) { //determining maze boundaries
                 maxRows++;
                 maxCols = Math.max(maxCols, line.length());
             }
 
             fileReader.close();
 
-            mazeGrid = new int[maxRows][maxCols]; //creating grid based on max rows and cols
+            mazeGrid = new TileType[maxRows][maxCols]; //creating grid based on max rows and cols
 
             BufferedReader reader = new BufferedReader(new FileReader(mazeFile));
             int rowIndex = 0;
 
-            while ((line = reader.readLine()) != null) { //Storing an empty space as a 1 and a wall as a 0 in a 2D array
+            while ((line = reader.readLine()) != null) { //Storing an empty space as OPEN and a wall as WALL in a 2D array
                 for (int colIndex = 0; colIndex < line.length(); colIndex++) {
-                    mazeGrid[rowIndex][colIndex] = (line.charAt(colIndex) == ' ') ? 1 : 0;
+                    mazeGrid[rowIndex][colIndex] = (line.charAt(colIndex) == ' ') ? TileType.OPEN : TileType.WALL;
                 }
                 rowIndex++;
             }

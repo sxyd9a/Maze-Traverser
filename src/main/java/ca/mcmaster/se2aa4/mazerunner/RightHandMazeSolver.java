@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner;
 public class RightHandMazeSolver extends PathFinder {
 
     @Override
-    public String canonicalPathSearch(int[][] maze, int[] startPos, int[] finalPos){
+    public String canonicalPathSearch(TileType[][] maze, int[] startPos, int[] finalPos){
         StringBuilder canonicalPath = new StringBuilder();
 
         int row = startPos[0]; //start at initial position
@@ -15,15 +15,7 @@ public class RightHandMazeSolver extends PathFinder {
 
         while(!(row == finalPos[0] && col == finalPos[1])){ //Keep checking for a movement so long as the final spot has not been reached
             
-            int rightDir;
-            switch (currDirection) { //Check which ever direction is to the right of the current direction
-                case 0 -> rightDir = 1;
-                case 1 -> rightDir = 2;
-                case 2 -> rightDir = 3;
-                case 3 -> rightDir = 0;
-                default -> throw new IllegalStateException("Invalid direction: " + currDirection);
-            }
-
+            int rightDir = (currDirection + 1) % 4; //Check which ever direction is to the right of the current direction
             int rightRow = row + directions[rightDir][0]; //Determine row to the right
             int rightCol = col + directions[rightDir][1]; //Determine column to the right
 
@@ -31,8 +23,7 @@ public class RightHandMazeSolver extends PathFinder {
                 currDirection = rightDir; //Set new direction faced
                 row = rightRow;
                 col = rightCol;
-                canonicalPath.append("R");
-                canonicalPath.append("F");
+                canonicalPath.append("R").append("F");
             }
             else { //check if just moving forward is possible
                 int forwardRow = row + directions[currDirection][0]; //Determine row directly ahead
@@ -44,148 +35,86 @@ public class RightHandMazeSolver extends PathFinder {
                     canonicalPath.append("F");
                 }
                 else{ 
-                    int leftDir;
-                    switch (currDirection) { //check if turning let is possible
-                        case 0 -> leftDir = 3;
-                        case 1 -> leftDir = 0;
-                        case 2 -> leftDir = 1;
-                        case 3 -> leftDir = 2;
-                        default -> throw new IllegalStateException("Invalid direction: " + currDirection);
-                    }
-                    //check if turning let is possible
-                    currDirection = leftDir; //Set new direction
+                    currDirection = (currDirection + 3) % 4; //turn left
                     canonicalPath.append("L");
                 }
             }
-           
         }
+
         return canonicalPath.toString();
     }
 
     @Override
-    public boolean validatePath(int[][] maze, int[] startPos, int[] finalPos, String userPath){
-        int row = startPos[0];
-        int col = startPos[1];
+    public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath){
+        int row = startPos[0]; //Starting row position
+        int col = startPos[1]; //Starting column position
 
-        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; //Directions: North, East, South, West
 
-        int currDirection = 1;
+        int currDirection = 1; //Start by facing East 
 
-        int i = 0; //index to track which part of user's path we're on
-        int motions = 0; //tracking the number of forward, left or right movements at a time
-        while(i<userPath.length()){
-            char move = userPath.charAt(i); //hold current part of path
+        int i = 0; //Index to iterate through the user's path string
+        int motions = 0; //To store number values before a move 
 
-            if(Character.isDigit(move)){ //If a number is encountered, set it to be the number of movements needed
-                motions = Character.getNumericValue(move);
+        while(i < userPath.length()){ //Loop through each character in the path string
+            char move = userPath.charAt(i); //Current character (either a digit or a direction command)
+
+            if(Character.isDigit(move)){ //If it's a digit, build the motions count (multi-digit supported)
+                motions = motions * 10 + Character.getNumericValue(move);
             }
-            else if(move == 'F'){ //Handle case we're a forward signal is met
-                if(motions > 0){ //Multiple forward movements:
-                    for(int j = 0; j<motions; j++){ //Conduct each forward movement seperately
-                        //Determine placement ahead
-                        int newRow = row + directions[currDirection][0]; 
-                        int newCol = col + directions[currDirection][1];
-    
-                        if(!validMove(maze, newRow, newCol)){ //Check if motion is doable
-                            return false;
-                        }
-    
-                        //set new position
-                        row = newRow;
-                        col = newCol;
-                    }
-                    motions = 0; //reset motions to 0 for next group
-                } else { //Singular forward movement
-                    row += directions[currDirection][0];
-                    col += directions[currDirection][1];
+            else if(move == 'F'){ //Move forward in current direction
+                motions = (motions == 0) ? 1 : motions; //Default to 1 if no digit prefix
+                for(int j = 0; j < motions; j++){
+                    int newRow = row + directions[currDirection][0]; //Calculate new row
+                    int newCol = col + directions[currDirection][1]; //Calculate new column
+                    if(!validMove(maze, newRow, newCol)) return false; //If next step is invalid, return false
+                    row = newRow; //Update current row
+                    col = newCol; //Update current column
                 }
+                motions = 0; //Reset motion counter for next instruction
+            }
+            else if(move == 'R'){ //Turn right
+                motions = (motions == 0) ? 1 : motions; //Default to 1 if no digit prefix
+                currDirection = (currDirection + motions) % 4; //Update direction clockwise
+                motions = 0; //Reset motion counter
+            }
+            else if(move == 'L'){ //Turn left
+                motions = (motions == 0) ? 1 : motions; //Default to 1 if no digit prefix
+                currDirection = (currDirection + 4 - motions % 4) % 4; //Update direction counter-clockwise
+                motions = 0; //Reset motion counter
+            }
+            else return false; //Invalid character
 
-            }
-            else if(move == 'R'){ //Handle case where a right signal is met
-                if(motions>0){ //Multiple right turns:
-                    for(int j = 0; j<motions; j++){
-                        switch (currDirection) { //Get corresponding right direction
-                            case 0 -> currDirection = 1;
-                            case 1 -> currDirection = 2;
-                            case 2 -> currDirection = 3;
-                            case 3 -> currDirection = 0;
-                            default -> throw new IllegalStateException("Invalid direction: " + currDirection);
-                        }
-                    }
-                    motions = 0; //reset motions to 0 for next group
-                } else { //Singular right turn
-                    switch (currDirection) { 
-                        case 0 -> currDirection = 1;
-                        case 1 -> currDirection = 2;
-                        case 2 -> currDirection = 3;
-                        case 3 -> currDirection = 0;
-                        default -> throw new IllegalStateException("Invalid direction: " + currDirection);
-                    }
-                }
-            }
-            else if(move == 'L'){ //Handle case where a left signal is met
-                if(motions>0){ //Multiple left turns:
-                    for(int j = 0; j<motions; j++){
-                        switch (currDirection) { //Get corresponding left direction
-                            case 0 -> currDirection = 3;
-                            case 1 -> currDirection = 0;
-                            case 2 -> currDirection = 1;
-                            case 3 -> currDirection = 2;
-                            default -> throw new IllegalStateException("Invalid direction: " + currDirection);
-                        }
-                    }
-                    motions = 0; //Reset motions to 0 for next group
-                } else { //Singular left turn
-                    switch (currDirection) { 
-                        case 0 -> currDirection = 3;
-                        case 1 -> currDirection = 0;
-                        case 2 -> currDirection = 1;
-                        case 3 -> currDirection = 2;
-                        default -> throw new IllegalStateException("Invalid direction: " + currDirection);
-                    }
-                }
-            }
-            else{
-                return false;
-            }
-            i++;
+            i++; //Move to next character in path
         }
 
+        //Return true only if we reached the final position
         return row == finalPos[0] && col == finalPos[1];
     }
+
     
     @Override
-    public boolean validMove(int[][] maze, int row, int col){ //check whether move is possibe
-        return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == 1;
+    public boolean validMove(TileType[][] maze, int row, int col){ //check whether move is possible
+        return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == TileType.OPEN;
     }
 
     @Override
     public String factorizePath(String canonicalPath) {
         StringBuilder factorizedPath = new StringBuilder(); //store factorized version of path
-        int moveCount = 0; //count each move regardless of type
-        char prevMove = canonicalPath.charAt(0); //store the previous made move
+        int moveCount = 0;
+        char prevMove = canonicalPath.charAt(0);
 
-        for(char move : canonicalPath.toCharArray()){ //Iterate through each character in the canonical path
-            if(move == prevMove){ //If the current move is the same as prior, assume we are counting one group
+        for(char move : canonicalPath.toCharArray()){
+            if(move == prevMove){
                 moveCount++;
-            }
-            else{ //Add a completed group to the factorized path
-                if(moveCount == 1){ //If the previous group (forward, right, or left) was one movement, no need to append a count
-                    factorizedPath.append(prevMove);
-                } else {
-                    factorizedPath.append(moveCount).append(prevMove); //Otherwise append both the number of movements and the type of motion corresponding to the group
-                }
-                prevMove = move; //Set previous move to the move most recently made for next group
-                moveCount = 1; //Count current iteration as a move
+            } else {
+                factorizedPath.append(moveCount == 1 ? prevMove : moveCount + "" + prevMove);
+                prevMove = move;
+                moveCount = 1;
             }
         }
 
-        //append last move group
-        if(moveCount == 1){
-            factorizedPath.append(prevMove);
-        } else {
-            factorizedPath.append(moveCount).append(prevMove);
-        }
+        factorizedPath.append(moveCount == 1 ? prevMove : moveCount + "" + prevMove);
 
         return factorizedPath.toString();
     }
