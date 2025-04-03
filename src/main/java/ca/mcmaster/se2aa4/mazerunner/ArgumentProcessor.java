@@ -16,11 +16,9 @@ public class ArgumentProcessor {
         this.options = defineOptions();
     }
 
-    //Define all CLI options
     private Options defineOptions() {
         Options options = new Options();
 
-        //-i flag for input file
         Option inputFileOption = Option.builder("i")
                 .longOpt("input")
                 .desc("Path to the maze input file")
@@ -30,7 +28,6 @@ public class ArgumentProcessor {
                 .build();
         options.addOption(inputFileOption);
 
-        //-p flag for user-provided path
         Option pathOption = Option.builder("p")
                 .longOpt("path")
                 .desc("User-provided path to validate (e.g., FFFF)")
@@ -39,6 +36,15 @@ public class ArgumentProcessor {
                 .required(false)
                 .build();
         options.addOption(pathOption);
+
+        Option solverOption = Option.builder("s")
+                .longOpt("solver")
+                .desc("Maze solving strategy to use (right or bfs)")
+                .hasArg()
+                .argName("SOLVER")
+                .required(false)
+                .build();
+        options.addOption(solverOption);
 
         return options;
     }
