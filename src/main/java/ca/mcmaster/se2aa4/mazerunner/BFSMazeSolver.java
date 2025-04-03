@@ -5,12 +5,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-
+//implements breadth first search to find shortest path through the maze
 public class BFSMazeSolver implements MazeSolverStrategy {
 
     int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
-    //Finds the canonical shortest path from start to finish using BFS
     @Override
     public String canonicalPathSearch(TileType[][] maze, int[] start, int[] end) {
         int rows = maze.length;
@@ -46,7 +45,7 @@ public class BFSMazeSolver implements MazeSolverStrategy {
             }
         }
 
-        //Reconstruct the path backwards
+        //reconstruct the path backwards
         StringBuilder path = new StringBuilder();
         String current = end[0] + "," + end[1];
         while (cameFrom.containsKey(current)) {
@@ -101,18 +100,16 @@ public class BFSMazeSolver implements MazeSolverStrategy {
             i++;
         }
 
-        //Check if reached the correct end point
+        //check if reached the correct end point
         return row == finalPos[0] && col == finalPos[1];
     }
 
-    //Utility method to check if a move is within bounds and hits an open tile
+    
     private boolean isValidMove(TileType[][] maze, int row, int col) {
-        return row >= 0 && row < maze.length &&
-               col >= 0 && col < maze[0].length &&
-               maze[row][col] == TileType.OPEN;
+        return row >= 0 && row < maze.length && col >= 0 && col < maze[0].length && maze[row][col] == TileType.OPEN;
     }
 
-    //Factorizes a path
+    //factorize path
     @Override
     public String factorizePath(String path) {
         if (path == null || path.isEmpty()) return "";
@@ -133,9 +130,12 @@ public class BFSMazeSolver implements MazeSolverStrategy {
             }
         }
 
-        if (count == 1) result.append(prev);
-        else result.append(count).append(prev);
-
+        if (count == 1){
+            result.append(prev);
+        } 
+        else {
+            result.append(count).append(prev);
+        } 
         return result.toString();
     }
 

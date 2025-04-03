@@ -97,6 +97,7 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
         return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == TileType.OPEN;
     }
 
+    //factorize path
     @Override
     public String factorizePath(String canonicalPath) {
         if (canonicalPath == null || canonicalPath.isEmpty()) return "";

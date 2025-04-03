@@ -8,56 +8,67 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 
     private static final Logger log = LogManager.getLogger();
+
     private static final MazeReader reader = new MazeReader();
+
+    //parse cli arguments
     private static final ArgumentProcessor argumentProcessor = new ArgumentProcessor();
+
+    //Holds the current maze-solving strategy
     private static MazeSolverStrategy solver;
 
     public static void main(String[] args) {
         log.info("** Starting Maze Application");
 
         try {
+            //parser tracking
             CommandLine cmd = argumentProcessor.parseArguments(args);
+
+            //Get maze file path and solver strategy
             String mazePath = cmd.getOptionValue("i");
-            String strategy = cmd.getOptionValue("s"); 
+            String strategy = cmd.getOptionValue("s");
+
+            //Use factory to match with correct solver strategy
             solver = MazeSolverFactory.getSolver(strategy);
 
+            //Load maze into a 2D array
             TileType[][] maze = reader.loadMaze(mazePath);
+
             printMaze(maze);
 
+            //determine maze starting and ending positions
             int[] start = solver.determineStartPos(maze);
             int[] finish = solver.determineFinalPos(maze);
 
+            MazeCommandInvoker invoker = new MazeCommandInvoker();
+
+            //If a path is provided, validate. Otherwise, solve the maze path
             if (cmd.hasOption("p")) {
-                String userPath = cmd.getOptionValue("p");
-                boolean isFactorized = userPath.chars().anyMatch(Character::isDigit);
-                String pathToCheck = isFactorized ? userPath : solver.factorizePath(userPath);
-                boolean valid = solver.validatePath(maze, start, finish, pathToCheck);
-                System.out.println(valid ? "Your path works!" : "Invalid Path!");
+                MazeCommand validate = new ValidatePathCommand(solver, maze, start, finish, cmd.getOptionValue("p"));
+                invoker.setCommand(validate);
             } else {
-                String canonical = solver.canonicalPathSearch(maze, start, finish);
-                if (canonical.isEmpty()) {
-                    System.out.println("There is no path through the maze");
-                } else {
-                    System.out.println("Below is a canonical path through the maze:");
-                    System.out.println(canonical);
-                    System.out.println("Below is the same path factorized:");
-                    System.out.println(solver.factorizePath(canonical));
-                }
+                MazeCommand solve = new SolveMazeCommand(solver, maze, start, finish);
+                invoker.setCommand(solve);
             }
 
+            invoker.runCommand();
+
         } catch (ParseException e) {
+            //Error when parsing CLI arguments
             log.error("Argument parsing failed: {}", e.getMessage());
             System.err.println("Error: " + e.getMessage());
             argumentProcessor.printHelp();
         } catch (IllegalArgumentException e) {
+            //Error when factory is given an invalid solver strategy
             log.error("Invalid input: {}", e.getMessage());
-            System.err.println("Error: " + e.getMessage()); 
+            System.err.println("Error: " + e.getMessage());
             argumentProcessor.printHelp();
         }
 
         log.info("**** End of Maze Application");
     }
 
+    //Prints layout of maze on console for user
     private static void printMaze(TileType[][] maze) {
         System.out.println("**** Maze Layout ****");
         for (TileType[] row : maze) {
