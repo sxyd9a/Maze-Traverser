@@ -1,10 +1,10 @@
 package ca.mcmaster.se2aa4.mazerunner.command;
 
 public class MazeCommandInvoker {
-    private MazeCommand command;
+    private MazeMoveCommand command;
 
     //sets the user's desired task (validate or solve)
-    public void setCommand(MazeCommand command) {
+    public void setCommand(MazeMoveCommand command) {
         this.command = command;
     }
 

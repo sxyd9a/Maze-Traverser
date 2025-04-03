@@ -1,5 +1,11 @@
 package ca.mcmaster.se2aa4.mazerunner.strategy;
 
+import ca.mcmaster.se2aa4.mazerunner.command.MazeContext;
+import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveHistory;
+import ca.mcmaster.se2aa4.mazerunner.command.MoveForwardCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.TurnLeftCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.TurnRightCommand;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 
@@ -9,36 +15,36 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
     public String canonicalPathSearch(TileType[][] maze, int[] startPos, int[] finalPos){
         StringBuilder canonicalPath = new StringBuilder();
 
-        int row = startPos[0]; //start at initial position
-        int col = startPos[1]; //start at initial position
+        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); //start East
+        MazeMoveHistory history = new MazeMoveHistory();
+        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
-        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; //corresponds to North, East, South and West
+        while (!(context.row == finalPos[0] && context.col == finalPos[1])) {
+            int rightDir = (context.direction + 1) % 4;
+            int rightRow = context.row + directions[rightDir][0];
+            int rightCol = context.col + directions[rightDir][1];
 
-        int currDirection = 1; //start facing east 
-
-        while (!(row == finalPos[0] && col == finalPos[1])) { //keep checking for a movement so long as the final spot has not been reached
-            
-            int rightDir = (currDirection + 1) % 4; //check which ever direction is to the right of the current direction
-            int rightRow = row + directions[rightDir][0]; //determine row to the right
-            int rightCol = col + directions[rightDir][1]; //determine column to the right
-
-            if (MazeUtils.validMove(maze, rightRow, rightCol)) { //check if turning right and moving forward is possible
-                currDirection = rightDir; //set new direction faced
-                row = rightRow;
-                col = rightCol;
+            if (MazeUtils.validMove(maze, rightRow, rightCol)) {
+                MazeMoveCommand turnRight = new TurnRightCommand(context);
+                MazeMoveCommand moveForward = new MoveForwardCommand(context);
+                turnRight.execute();
+                moveForward.execute();
+                history.push(turnRight);
+                history.push(moveForward);
                 canonicalPath.append("R").append("F");
-            }
-            else { //check if just moving forward is possible
-                int forwardRow = row + directions[currDirection][0]; //determine row directly ahead
-                int forwardCol = col + directions[currDirection][1]; //determine column directly ahead
+            } else {
+                int forwardRow = context.row + directions[context.direction][0];
+                int forwardCol = context.col + directions[context.direction][1];
 
-                if (MazeUtils.validMove(maze, forwardRow, forwardCol)) { //check if moving forward is possible
-                    row = forwardRow;
-                    col = forwardCol;
+                if (MazeUtils.validMove(maze, forwardRow, forwardCol)) {
+                    MazeMoveCommand moveForward = new MoveForwardCommand(context);
+                    moveForward.execute();
+                    history.push(moveForward);
                     canonicalPath.append("F");
-                }
-                else { 
-                    currDirection = (currDirection + 3) % 4; //turn left
+                } else {
+                    MazeMoveCommand turnLeft = new TurnLeftCommand(context);
+                    turnLeft.execute();
+                    history.push(turnLeft);
                     canonicalPath.append("L");
                 }
             }
@@ -47,55 +53,51 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
         return canonicalPath.toString();
     }
 
+
     @Override
-    public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath){
-        int row = startPos[0]; //starting row position
-        int col = startPos[1]; //starting column position
+    public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath) {
+        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); //start facing East
+        MazeMoveHistory history = new MazeMoveHistory(); //store executed commands
+        int motions = 0;
 
-        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; 
+        for (int i = 0; i < userPath.length(); i++) {
+            char move = userPath.charAt(i);
 
-        int currDirection = 1; //start by facing East 
-
-        int i = 0; 
-        int motions = 0; //store number values before a move 
-
-        while (i < userPath.length()) { //loop through each character in the user path string
-            char move = userPath.charAt(i); //current character (either a digit or a direction command)
-
-            if (Character.isDigit(move)) { //if it's a digit, build the motions count (multi-digit supported)
+            if (Character.isDigit(move)) {
                 motions = motions * 10 + Character.getNumericValue(move);
+                continue;
             }
-            else if (move == 'F') { //move forward in current direction
-                motions = (motions == 0) ? 1 : motions; //default to 1 if no digit prefix
-                for (int j = 0; j < motions; j++) {
-                    int newRow = row + directions[currDirection][0]; //calculate new row
-                    int newCol = col + directions[currDirection][1]; //calculate new column
-                    if (!MazeUtils.validMove(maze, newRow, newCol)){
-                        return false; //if next step is invalid, return false
-                    } 
-                    row = newRow; 
-                    col = newCol; 
-                }
-                motions = 0;
-            }
-            else if (move == 'R') { //turn right
-                motions = (motions == 0) ? 1 : motions; 
-                currDirection = (currDirection + motions) % 4; //update direction clockwise
-                motions = 0; 
-            }
-            else if (move == 'L') { //turn left
-                motions = (motions == 0) ? 1 : motions; 
-                currDirection = (currDirection + 4 - motions % 4) % 4; //update direction counter-clockwise
-                motions = 0; 
-            }
-            else return false; //invalid character
 
-            i++; //move to next character in path
+            motions = (motions == 0) ? 1 : motions;
+
+            for (int j = 0; j < motions; j++) {
+                MazeMoveCommand command = switch (move) {
+                    case 'F' -> new MoveForwardCommand(context);
+                    case 'R' -> new TurnRightCommand(context);
+                    case 'L' -> new TurnLeftCommand(context);
+                    default -> null;
+                };
+
+                if (command == null) return false;
+
+                command.execute();
+                history.push(command); 
+
+                if (move == 'F' && !MazeUtils.validMove(maze, context.row, context.col)) {
+                    while (!history.isEmpty()) {
+                        history.pop().undo();
+                    }
+                    return false;
+                }
+            }
+
+            motions = 0;
         }
 
-        //return true only if we reached the final position
-        return row == finalPos[0] && col == finalPos[1];
+        return context.row == finalPos[0] && context.col == finalPos[1];
     }
+
+
 
     @Override
     public String factorizePath(String canonicalPath) {

@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner.command;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 
-public class SolveMazeCommand implements MazeCommand {
+public class SolveMazeCommand implements MazeMoveCommand {
     private final MazeSolverStrategy solver;
     private final TileType[][] maze;
     private final int[] start;
@@ -28,5 +28,10 @@ public class SolveMazeCommand implements MazeCommand {
             System.out.println("Below is the same path factorized:");
             System.out.println(solver.factorizePath(canonical));
         }
+    }
+
+    @Override
+    public void undo() {
+        // Not applicable for this command
     }
 }

@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner.command;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 
-public class ValidatePathCommand implements MazeCommand {
+public class ValidatePathCommand implements MazeMoveCommand {
     private final MazeSolverStrategy solver;
     private final TileType[][] maze;
     private final int[] start;
@@ -26,4 +26,10 @@ public class ValidatePathCommand implements MazeCommand {
         boolean valid = solver.validatePath(maze, start, finish, pathToCheck);
         System.out.println(valid ? "Your path works!" : "Invalid Path!");
     }
+
+    @Override
+    public void undo() {
+        // Not applicable for this command
+    }
+
 }

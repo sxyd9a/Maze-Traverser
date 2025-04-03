@@ -5,7 +5,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ca.mcmaster.se2aa4.mazerunner.command.MazeCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.MazeCommandInvoker;
 import ca.mcmaster.se2aa4.mazerunner.command.SolveMazeCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.ValidatePathCommand;
@@ -53,10 +53,10 @@ public class Main {
 
             //If a path is provided, validate. Otherwise, solve the maze path
             if (cmd.hasOption("p")) {
-                MazeCommand validate = new ValidatePathCommand(solver, maze, start, finish, cmd.getOptionValue("p"));
+                MazeMoveCommand validate = new ValidatePathCommand(solver, maze, start, finish, cmd.getOptionValue("p"));
                 invoker.setCommand(validate);
             } else {
-                MazeCommand solve = new SolveMazeCommand(solver, maze, start, finish);
+                MazeMoveCommand solve = new SolveMazeCommand(solver, maze, start, finish);
                 invoker.setCommand(solve);
             }
 
