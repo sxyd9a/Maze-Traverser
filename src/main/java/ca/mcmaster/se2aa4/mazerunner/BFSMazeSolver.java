@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-//implements breadth first search to find shortest path through the maze
+//Implements breadth-first search to find the shortest path through the maze
 public class BFSMazeSolver implements MazeSolverStrategy {
 
-    int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+    int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; //Up, Right, Down, Left
 
     @Override
     public String canonicalPathSearch(TileType[][] maze, int[] start, int[] end) {
@@ -23,17 +23,18 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         queue.add(start);
         visited[start[0]][start[1]] = true;
 
-        
         while (!queue.isEmpty()) {
             int[] pos = queue.poll();
 
-            if (pos[0] == end[0] && pos[1] == end[1]) break; //Reached goal
+            if (pos[0] == end[0] && pos[1] == end[1]) {
+                break; //Reached goal
+            } 
 
             for (int d = 0; d < 4; d++) {
                 int newRow = pos[0] + directions[d][0];
                 int newCol = pos[1] + directions[d][1];
 
-                if (isValidMove(maze, newRow, newCol) && !visited[newRow][newCol]) {
+                if (MazeUtils.validMove(maze, newRow, newCol) && !visited[newRow][newCol]) {
                     visited[newRow][newCol] = true;
                     queue.add(new int[]{newRow, newCol});
 
@@ -56,7 +57,6 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         return path.toString();
     }
 
-    
     @Override
     public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath) {
         int row = startPos[0];
@@ -75,7 +75,7 @@ public class BFSMazeSolver implements MazeSolverStrategy {
             else if (move == 'U' || move == 'D' || move == 'L' || move == 'R') {
                 motions = (motions == 0) ? 1 : motions;
 
-                // Perform the motion
+                //perform the motion
                 for (int j = 0; j < motions; j++) {
                     int newRow = row;
                     int newCol = col;
@@ -87,7 +87,7 @@ public class BFSMazeSolver implements MazeSolverStrategy {
                         case 'R' -> newCol++;
                     }
 
-                    if (!isValidMove(maze, newRow, newCol)) return false;
+                    if (!MazeUtils.validMove(maze, newRow, newCol)) return false;
 
                     row = newRow;
                     col = newCol;
@@ -104,48 +104,18 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         return row == finalPos[0] && col == finalPos[1];
     }
 
-    
-    private boolean isValidMove(TileType[][] maze, int row, int col) {
-        return row >= 0 && row < maze.length && col >= 0 && col < maze[0].length && maze[row][col] == TileType.OPEN;
-    }
-
-    //factorize path
     @Override
     public String factorizePath(String path) {
-        if (path == null || path.isEmpty()) return "";
-
-        StringBuilder result = new StringBuilder();
-        int count = 1;
-        char prev = path.charAt(0);
-
-        for (int i = 1; i < path.length(); i++) {
-            char curr = path.charAt(i);
-            if (curr == prev) {
-                count++;
-            } else {
-                if (count == 1) result.append(prev);
-                else result.append(count).append(prev);
-                prev = curr;
-                count = 1;
-            }
-        }
-
-        if (count == 1){
-            result.append(prev);
-        } 
-        else {
-            result.append(count).append(prev);
-        } 
-        return result.toString();
+        return MazeUtils.factorizePath(path);
     }
 
     @Override
     public int[] determineStartPos(TileType[][] maze) {
-        return MazePositionUtils.findStart(maze);
+        return MazeUtils.findStart(maze);
     }
 
     @Override
     public int[] determineFinalPos(TileType[][] maze) {
-        return MazePositionUtils.findEnd(maze);
+        return MazeUtils.findEnd(maze);
     }
 }
