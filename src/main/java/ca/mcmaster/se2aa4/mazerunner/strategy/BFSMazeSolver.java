@@ -1,9 +1,12 @@
-package ca.mcmaster.se2aa4.mazerunner;
+package ca.mcmaster.se2aa4.mazerunner.strategy;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
+import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 
 //Implements breadth-first search to find the shortest path through the maze
 public class BFSMazeSolver implements MazeSolverStrategy {

@@ -1,6 +1,9 @@
-package ca.mcmaster.se2aa4.mazerunner;
+package ca.mcmaster.se2aa4.mazerunner.strategy;
 
 //Interface that defines a standard strategy for solving mazes
+
+import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
+
 public interface MazeSolverStrategy {
 
     //Method that finds a canonical format of a path through the maze

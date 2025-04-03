@@ -1,4 +1,7 @@
-package ca.mcmaster.se2aa4.mazerunner;
+package ca.mcmaster.se2aa4.mazerunner.strategy;
+
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
+import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 
 public class RightHandMazeSolver implements MazeSolverStrategy {
 

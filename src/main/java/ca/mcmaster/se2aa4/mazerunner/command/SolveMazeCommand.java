@@ -1,4 +1,7 @@
-package ca.mcmaster.se2aa4.mazerunner;
+package ca.mcmaster.se2aa4.mazerunner.command;
+
+import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
+import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 
 public class SolveMazeCommand implements MazeCommand {
     private final MazeSolverStrategy solver;

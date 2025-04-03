@@ -5,6 +5,15 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.mazerunner.command.MazeCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.MazeCommandInvoker;
+import ca.mcmaster.se2aa4.mazerunner.command.SolveMazeCommand;
+import ca.mcmaster.se2aa4.mazerunner.command.ValidatePathCommand;
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeReader;
+import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
+import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverFactory;
+import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
+
 public class Main {
 
     private static final Logger log = LogManager.getLogger();
