@@ -30,7 +30,7 @@ public class ArgumentProcessor {
 
         Option pathOption = Option.builder("p")
                 .longOpt("path")
-                .desc("User-provided path to validate (e.g., FFFF)")
+                .desc("User-provided path to validate (e.g., FFFF or URDL)")
                 .hasArg()
                 .argName("PATH")
                 .required(false)
@@ -39,10 +39,10 @@ public class ArgumentProcessor {
 
         Option solverOption = Option.builder("s")
                 .longOpt("solver")
-                .desc("Maze solving strategy to use (right or bfs)")
+                .desc("Maze solving strategy to use (rhs or bfs)")
                 .hasArg()
                 .argName("SOLVER")
-                .required(false)
+                .required(true) 
                 .build();
         options.addOption(solverOption);
 

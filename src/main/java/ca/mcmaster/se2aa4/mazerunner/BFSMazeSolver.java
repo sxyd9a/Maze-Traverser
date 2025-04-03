@@ -5,45 +5,48 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
+
 public class BFSMazeSolver implements MazeSolverStrategy {
 
     int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
+    //Finds the canonical shortest path from start to finish using BFS
     @Override
     public String canonicalPathSearch(TileType[][] maze, int[] start, int[] end) {
         int rows = maze.length;
         int cols = maze[0].length;
 
-        boolean[][] visited = new boolean[rows][cols];
-        Map<String, String> cameFrom = new HashMap<>();
-        Map<String, Character> moveFrom = new HashMap<>();
-        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[rows][cols]; //tracks visited positions
+        Map<String, String> cameFrom = new HashMap<>(); //maps a cell to its parent
+        Map<String, Character> moveFrom = new HashMap<>(); //stores the move used to reach each cell
+        Queue<int[]> queue = new LinkedList<>(); //BFS queue
 
         queue.add(start);
         visited[start[0]][start[1]] = true;
 
+        
         while (!queue.isEmpty()) {
             int[] pos = queue.poll();
 
-            if (pos[0] == end[0] && pos[1] == end[1]) {
-                break;
-            }
+            if (pos[0] == end[0] && pos[1] == end[1]) break; //Reached goal
 
             for (int d = 0; d < 4; d++) {
                 int newRow = pos[0] + directions[d][0];
                 int newCol = pos[1] + directions[d][1];
+
                 if (isValidMove(maze, newRow, newCol) && !visited[newRow][newCol]) {
                     visited[newRow][newCol] = true;
                     queue.add(new int[]{newRow, newCol});
+
                     String from = pos[0] + "," + pos[1];
                     String to = newRow + "," + newCol;
-                    cameFrom.put(to, from);
-                    moveFrom.put(to, "URDL".charAt(d)); 
+                    cameFrom.put(to, from); //mark parent
+                    moveFrom.put(to, "URDL".charAt(d)); //store direction used to reach this cell
                 }
             }
         }
 
-        
+        //Reconstruct the path backwards
         StringBuilder path = new StringBuilder();
         String current = end[0] + "," + end[1];
         while (cameFrom.containsKey(current)) {
@@ -54,37 +57,62 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         return path.toString();
     }
 
+    
     @Override
-    public boolean validatePath(TileType[][] maze, int[] start, int[] end, String userPath) {
-        int row = start[0], col = start[1];
+    public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath) {
+        int row = startPos[0];
+        int col = startPos[1];
 
-        for (int i = 0; i < userPath.length(); i++) {
+        int i = 0;
+        int motions = 0;
+
+        //check path piece by piece
+        while (i < userPath.length()) {
             char move = userPath.charAt(i);
-            int newRow = row, newCol = col;
 
-            switch (move) {
-                case 'U' -> newRow--;
-                case 'D' -> newRow++;
-                case 'L' -> newCol--;
-                case 'R' -> newCol++;
-                default -> {
-                    return false;
-                }
+            if (Character.isDigit(move)) {
+                motions = motions * 10 + Character.getNumericValue(move); //account for 2+ digits
             }
+            else if (move == 'U' || move == 'D' || move == 'L' || move == 'R') {
+                motions = (motions == 0) ? 1 : motions;
 
-            if (!isValidMove(maze, newRow, newCol)) return false;
+                // Perform the motion
+                for (int j = 0; j < motions; j++) {
+                    int newRow = row;
+                    int newCol = col;
 
-            row = newRow;
-            col = newCol;
+                    switch (move) {
+                        case 'U' -> newRow--;
+                        case 'D' -> newRow++;
+                        case 'L' -> newCol--;
+                        case 'R' -> newCol++;
+                    }
+
+                    if (!isValidMove(maze, newRow, newCol)) return false;
+
+                    row = newRow;
+                    col = newCol;
+                }
+
+                motions = 0; 
+            }
+            else return false; //invalid character
+
+            i++;
         }
 
-        return row == end[0] && col == end[1];
+        //Check if reached the correct end point
+        return row == finalPos[0] && col == finalPos[1];
     }
 
+    //Utility method to check if a move is within bounds and hits an open tile
     private boolean isValidMove(TileType[][] maze, int row, int col) {
-        return row >= 0 && row < maze.length && col >= 0 && col < maze[0].length && maze[row][col] == TileType.OPEN;
+        return row >= 0 && row < maze.length &&
+               col >= 0 && col < maze[0].length &&
+               maze[row][col] == TileType.OPEN;
     }
 
+    //Factorizes a path
     @Override
     public String factorizePath(String path) {
         if (path == null || path.isEmpty()) return "";
@@ -120,6 +148,4 @@ public class BFSMazeSolver implements MazeSolverStrategy {
     public int[] determineFinalPos(TileType[][] maze) {
         return MazePositionUtils.findEnd(maze);
     }
-
-    
 }
