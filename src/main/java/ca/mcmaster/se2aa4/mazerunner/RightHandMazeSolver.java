@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-public class RightHandMazeSolver extends PathFinder {
+public class RightHandMazeSolver implements MazeSolverStrategy {
 
     @Override
     public String canonicalPathSearch(TileType[][] maze, int[] startPos, int[] finalPos){
@@ -93,29 +93,54 @@ public class RightHandMazeSolver extends PathFinder {
     }
 
     
-    @Override
     public boolean validMove(TileType[][] maze, int row, int col){ //check whether move is possible
         return row>=0 && row<maze.length && col>=0 && col<maze[0].length && maze[row][col] == TileType.OPEN;
     }
 
     @Override
     public String factorizePath(String canonicalPath) {
-        StringBuilder factorizedPath = new StringBuilder(); //store factorized version of path
-        int moveCount = 0;
+        if (canonicalPath == null || canonicalPath.isEmpty()) return "";
+
+        StringBuilder factorizedPath = new StringBuilder();
+        int moveCount = 1; //Start at 1 since 1 move minimum
         char prevMove = canonicalPath.charAt(0);
 
-        for(char move : canonicalPath.toCharArray()){
-            if(move == prevMove){
+        for (int i = 1; i < canonicalPath.length(); i++) {
+            char move = canonicalPath.charAt(i);
+            if (move == prevMove) {
                 moveCount++;
             } else {
-                factorizedPath.append(moveCount == 1 ? prevMove : moveCount + "" + prevMove);
+                //Append previous move group
+                if (moveCount == 1) {
+                    factorizedPath.append(prevMove);
+                } else {
+                    factorizedPath.append(moveCount).append(prevMove);
+                }
+                //Reset for new move
                 prevMove = move;
                 moveCount = 1;
             }
         }
 
-        factorizedPath.append(moveCount == 1 ? prevMove : moveCount + "" + prevMove);
+        //Append the last move group
+        if (moveCount == 1) {
+            factorizedPath.append(prevMove);
+        } else {
+            factorizedPath.append(moveCount).append(prevMove);
+        }
 
         return factorizedPath.toString();
     }
+
+
+    @Override
+    public int[] determineStartPos(TileType[][] maze) {
+        return MazePositionUtils.findStart(maze);
+    }
+
+    @Override
+    public int[] determineFinalPos(TileType[][] maze) {
+        return MazePositionUtils.findEnd(maze);
+    }
+
 }

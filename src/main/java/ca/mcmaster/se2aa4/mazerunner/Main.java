@@ -13,63 +13,56 @@ public class Main {
 
     private static final Logger log = LogManager.getLogger();
     private static final MazeReader reader = new MazeReader();
-    private static final PathFinder finder = new RightHandMazeSolver();
+    private static final MazeSolverStrategy solver = new RightHandMazeSolver();
     private static final ArgumentProcessor argumentProcessor = new ArgumentProcessor();
 
     public static void main(String[] args) {
         log.info("** Starting Maze Application");
 
         try {
-            // Parse the arguments
             CommandLine cmd = argumentProcessor.parseArguments(args);
-
             String mazePath = cmd.getOptionValue("i");
-            TileType[][] maze = reader.loadMaze(mazePath); //Load the maze into a 2D array of TileType
+            TileType[][] maze = reader.loadMaze(mazePath);
 
-            System.out.println("**** Maze Layout ****");
-            for (TileType[] row : maze) { //Print maze using OPEN and WALL
-                for (TileType cell : row) {
-                    System.out.print(cell == TileType.OPEN ? " " : "#"); //Show space for open, # for wall
-                }
-                System.out.println();
-            }
+            printMaze(maze);
 
-            int[] start = finder.determineStartPos(maze);
-            int[] finish = finder.determineFinalPos(maze);
+            int[] start = solver.determineStartPos(maze);
+            int[] finish = solver.determineFinalPos(maze);
 
-            if (cmd.hasOption("p")) { //Case when user inputs a path to be checked
+            if (cmd.hasOption("p")) {
                 String userPath = cmd.getOptionValue("p");
-                boolean alrdyFactorzd = false;
-                for (int i = 0; i < userPath.length(); i++) { //Check if the path has already been factorized
-                    if (Character.isDigit(userPath.charAt(i))) {
-                        alrdyFactorzd = true;
-                        break;
-                    }
-                }
-                boolean check;
-                if (!alrdyFactorzd) { //If inputted path not factorized, do so and then validate
-                    check = finder.validatePath(maze, start, finish, finder.factorizePath(userPath));
-                } else {
-                    check = finder.validatePath(maze, start, finish, userPath);
-                }
-                System.out.println(check ? "Your path works!" : "Invalid Path!");
-            } else { //Case where user wants to find a path through the maze
-                String canonical = finder.canonicalPathSearch(maze, start, finish); //Store canonical path
-                if (canonical.isEmpty()) { //Print message when no path is found
+                boolean isFactorized = userPath.chars().anyMatch(Character::isDigit);
+                String pathToCheck = isFactorized ? userPath : solver.factorizePath(userPath);
+                boolean valid = solver.validatePath(maze, start, finish, pathToCheck);
+                System.out.println(valid ? "Your path works!" : "Invalid Path!");
+            } else {
+                String canonical = solver.canonicalPathSearch(maze, start, finish);
+                if (canonical.isEmpty()) {
                     System.out.println("There is no path through the maze");
                 } else {
                     System.out.println("Below is a canonical path through the maze:");
                     System.out.println(canonical);
                     System.out.println("Below is the same path factorized:");
-                    System.out.println(finder.factorizePath(canonical)); //Print factorized path
+                    System.out.println(solver.factorizePath(canonical));
                 }
             }
 
-        } catch (ParseException e) { //Handle errors in argument parsing or runtime
+        } catch (ParseException e) {
             log.error("Error occurred", e);
             argumentProcessor.printHelp();
         }
 
         log.info("**** End of Maze Application");
+    }
+
+    //visual maze representation
+    private static void printMaze(TileType[][] maze) {
+        System.out.println("**** Maze Layout ****");
+        for (TileType[] row : maze) {
+            for (TileType cell : row) {
+                System.out.print(cell == TileType.OPEN ? " " : "#");
+            }
+            System.out.println();
+        }
     }
 }
