@@ -8,9 +8,10 @@ import java.util.Queue;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 
+//i created a new search algorithm to show the factory design pattern in action
 public class BFSMazeSolver implements MazeSolverStrategy {
 
-    // Directions: North, East, South, West
+    //North, East, South, West
     int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     @Override
@@ -26,6 +27,7 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         queue.add(start);
         visited[start[0]][start[1]] = true;
 
+        //standard bfs search loop
         while (!queue.isEmpty()) {
             int[] pos = queue.poll();
 
@@ -64,6 +66,7 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         return MazeUtils.factorizePath(path);
     }
 
+    //method below converts N, S, E, W bfs search results to be F, L, and R based so that path validation is universal
     private String convertToFRL(String nsewPath) {
         StringBuilder frlPath = new StringBuilder();
         char current = 'E'; //start facing East

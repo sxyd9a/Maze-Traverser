@@ -13,7 +13,7 @@ public class MazeContext {
         this.direction = direction;
     }
 
-    // Getters
+    //getters
     public int getRow() {
         return row;
     }
@@ -26,7 +26,7 @@ public class MazeContext {
         return direction;
     }
 
-    // Setters
+    //setters
     public void setRow(int row) {
         this.row = row;
     }

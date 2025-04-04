@@ -20,17 +20,17 @@ public class ValidatePath {
     public void completeValidation() {
         MazeContext context = new MazeContext(start[0], start[1], 1); //east
         MazeMoveHistory history = new MazeMoveHistory();
-        int motions = 0;
+        int motions = 0; //tracks the number of times a certain type of move is made
 
         for (int i = 0; i < userPath.length(); i++) {
             char move = userPath.charAt(i);
             if (Character.isDigit(move)) {
-                motions = motions * 10 + Character.getNumericValue(move);
+                motions = motions * 10 + Character.getNumericValue(move); //handling 2+ digit motions
                 continue;
             }
 
             motions = (motions == 0) ? 1 : motions;
-            for (int j = 0; j < motions; j++) {
+            for (int j = 0; j < motions; j++) { //executing correct command based on motion type
                 MazeMoveCommand command = switch (move) {
                     case 'F' -> new MoveForwardCommand(context);
                     case 'R' -> new TurnRightCommand(context);
@@ -38,7 +38,7 @@ public class ValidatePath {
                     default -> null;
                 };
 
-                if (command == null) {
+                if (command == null) { //no command means path is impossible
                     System.out.println("Invalid Path!");
                     return;
                 }

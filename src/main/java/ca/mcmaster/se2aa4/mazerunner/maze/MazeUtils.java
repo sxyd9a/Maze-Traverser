@@ -5,7 +5,9 @@ public class MazeUtils {
     //finding the start position 
     public static int[] findStart(TileType[][] maze) {
         for (int row = 0; row < maze.length; row++) {
-            if (maze[row][0] == TileType.OPEN) return new int[] {row, 0};
+            if (maze[row][0] == TileType.OPEN) {
+                return new int[] {row, 0};
+            }
         }
         return new int[] {-1, -1}; //return invalid if not found
     }
@@ -14,7 +16,9 @@ public class MazeUtils {
     public static int[] findEnd(TileType[][] maze) {
         int lastCol = maze[0].length - 1;
         for (int row = maze.length - 1; row >= 0; row--) {
-            if (maze[row][lastCol] == TileType.OPEN) return new int[] {row, lastCol};
+            if (maze[row][lastCol] == TileType.OPEN){
+                return new int[] {row, lastCol};
+            } 
         }
         return new int[] {-1, -1}; //return invalid if not found
     }

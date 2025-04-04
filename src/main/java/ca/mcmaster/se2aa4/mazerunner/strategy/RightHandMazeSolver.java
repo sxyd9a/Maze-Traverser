@@ -19,7 +19,8 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
         MazeMoveHistory history = new MazeMoveHistory();
         int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; //North, South, East, West
 
-        while (!(context.getRow() == finalPos[0] && context.getCol() == finalPos[1])) {
+        while (!(context.getRow() == finalPos[0] && context.getCol() == finalPos[1])) { //continue until reaching end
+            //checking if going right and forward is possible
             int rightDir = (context.getDirection() + 1) % 4;
             int rightRow = context.getRow() + directions[rightDir][0];
             int rightCol = context.getCol() + directions[rightDir][1];
@@ -33,6 +34,7 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
                 history.push(moveForward);
                 canonicalPath.append("R").append("F");
             } else {
+                //checking if going forward is possible
                 int forwardRow = context.getRow() + directions[context.getDirection()][0];
                 int forwardCol = context.getCol() + directions[context.getDirection()][1];
 
@@ -42,6 +44,7 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
                     history.push(moveForward);
                     canonicalPath.append("F");
                 } else {
+                    //resort to left turn
                     MazeMoveCommand turnLeft = new TurnLeftCommand(context);
                     context.executeCommand(turnLeft);
                     history.push(turnLeft);
