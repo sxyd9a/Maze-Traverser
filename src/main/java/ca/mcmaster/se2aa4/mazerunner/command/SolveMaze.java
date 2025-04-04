@@ -3,6 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner.command;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 
+//this class hels avoid having extra logic in main that has nothing to do with path validation
 public class SolveMaze {
     private final MazeSolverStrategy solver;
     private final TileType[][] maze;
@@ -16,7 +17,7 @@ public class SolveMaze {
         this.finish = finish;
     }
 
-    // Executes the rhs or bfs algorithm to find a path through the maze
+    //executes the rhs or bfs algorithm to find a path through the maze
     public void completePath() {
         String canonical = solver.canonicalPathSearch(maze, start, finish);
         if (canonical.isEmpty()) {

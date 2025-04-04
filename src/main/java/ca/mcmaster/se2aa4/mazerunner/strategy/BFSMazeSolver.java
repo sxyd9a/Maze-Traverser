@@ -8,20 +8,20 @@ import java.util.Queue;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 
-//Implements breadth-first search to find the shortest path through the maze
 public class BFSMazeSolver implements MazeSolverStrategy {
 
-    int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; //Up, Right, Down, Left
+    // Directions: North, East, South, West
+    int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
     @Override
     public String canonicalPathSearch(TileType[][] maze, int[] start, int[] end) {
         int rows = maze.length;
         int cols = maze[0].length;
 
-        boolean[][] visited = new boolean[rows][cols]; //tracks visited positions
-        Map<String, String> cameFrom = new HashMap<>(); //maps a cell to its parent
-        Map<String, Character> moveFrom = new HashMap<>(); //stores the move used to reach each cell
-        Queue<int[]> queue = new LinkedList<>(); //BFS queue
+        boolean[][] visited = new boolean[rows][cols];
+        Map<String, String> cameFrom = new HashMap<>();
+        Map<String, Character> moveFrom = new HashMap<>();
+        Queue<int[]> queue = new LinkedList<>();
 
         queue.add(start);
         visited[start[0]][start[1]] = true;
@@ -29,9 +29,7 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         while (!queue.isEmpty()) {
             int[] pos = queue.poll();
 
-            if (pos[0] == end[0] && pos[1] == end[1]) {
-                break; //Reached goal
-            } 
+            if (pos[0] == end[0] && pos[1] == end[1]) break;
 
             for (int d = 0; d < 4; d++) {
                 int newRow = pos[0] + directions[d][0];
@@ -43,68 +41,22 @@ public class BFSMazeSolver implements MazeSolverStrategy {
 
                     String from = pos[0] + "," + pos[1];
                     String to = newRow + "," + newCol;
-                    cameFrom.put(to, from); //mark parent
-                    moveFrom.put(to, "URDL".charAt(d)); //store direction used to reach this cell
+                    cameFrom.put(to, from);
+                    moveFrom.put(to, "NESW".charAt(d)); 
                 }
             }
         }
 
-        //reconstruct the path backwards
-        StringBuilder path = new StringBuilder();
+        //reconstruct NSEW path
+        StringBuilder nsewPath = new StringBuilder();
         String current = end[0] + "," + end[1];
         while (cameFrom.containsKey(current)) {
-            path.insert(0, moveFrom.get(current));
+            nsewPath.insert(0, moveFrom.get(current));
             current = cameFrom.get(current);
         }
 
-        return path.toString();
-    }
-
-    @Override
-    public boolean validatePath(TileType[][] maze, int[] startPos, int[] finalPos, String userPath) {
-        int row = startPos[0];
-        int col = startPos[1];
-
-        int i = 0;
-        int motions = 0;
-
-        //check path piece by piece
-        while (i < userPath.length()) {
-            char move = userPath.charAt(i);
-
-            if (Character.isDigit(move)) {
-                motions = motions * 10 + Character.getNumericValue(move); //account for 2+ digits
-            }
-            else if (move == 'U' || move == 'D' || move == 'L' || move == 'R') {
-                motions = (motions == 0) ? 1 : motions;
-
-                //perform the motion
-                for (int j = 0; j < motions; j++) {
-                    int newRow = row;
-                    int newCol = col;
-
-                    switch (move) {
-                        case 'U' -> newRow--;
-                        case 'D' -> newRow++;
-                        case 'L' -> newCol--;
-                        case 'R' -> newCol++;
-                    }
-
-                    if (!MazeUtils.validMove(maze, newRow, newCol)) return false;
-
-                    row = newRow;
-                    col = newCol;
-                }
-
-                motions = 0; 
-            }
-            else return false; //invalid character
-
-            i++;
-        }
-
-        //check if reached the correct end point
-        return row == finalPos[0] && col == finalPos[1];
+        // Convert to FRL path
+        return convertToFRL(nsewPath.toString());
     }
 
     @Override
@@ -112,13 +64,32 @@ public class BFSMazeSolver implements MazeSolverStrategy {
         return MazeUtils.factorizePath(path);
     }
 
-    @Override
-    public int[] determineStartPos(TileType[][] maze) {
-        return MazeUtils.findStart(maze);
+    private String convertToFRL(String nsewPath) {
+        StringBuilder frlPath = new StringBuilder();
+        char current = 'E'; //start facing East
+
+        for (int i = 0; i < nsewPath.length(); i++) {
+            char next = nsewPath.charAt(i);
+            String turn = getTurn(current, next);
+            frlPath.append(turn);
+            current = next;
+        }
+
+        return frlPath.toString();
     }
 
-    @Override
-    public int[] determineFinalPos(TileType[][] maze) {
-        return MazeUtils.findEnd(maze);
+    private String getTurn(char from, char to) {
+        String dirs = "NESW";
+        int fromIndex = dirs.indexOf(from);
+        int toIndex = dirs.indexOf(to);
+        int diff = (toIndex - fromIndex + 4) % 4;
+
+        return switch (diff) {
+            case 0 -> "F";
+            case 1 -> "RF";
+            case 2 -> "RR" + "F"; //Uturn
+            case 3 -> "LF";
+            default -> "";
+        };
     }
 }

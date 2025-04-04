@@ -7,10 +7,10 @@ public class MazeSolverFactory {
             throw new IllegalArgumentException("Solver strategy must be specified.");
         }
 
-        //If user wants to find/check path using rhs algorithm
+        //if user wants to find/check path using rhs algorithm
         if (strategyName.equalsIgnoreCase("rhs")) {
             return new RightHandMazeSolver();
-        //If user wants to find/check path using bfs algorithm
+        //if user wants to find/check path using bfs algorithm
         } else if (strategyName.equalsIgnoreCase("bfs")) {
             return new BFSMazeSolver();
         }

@@ -35,7 +35,7 @@ public class MazeReader {
             BufferedReader reader = new BufferedReader(new FileReader(mazeFile));
             int rowIndex = 0;
 
-            while ((line = reader.readLine()) != null) { //Storing an empty space as OPEN and a wall as WALL in a 2D array
+            while ((line = reader.readLine()) != null) { //storing an empty space as OPEN and a wall as WALL in a 2D array
                 for (int colIndex = 0; colIndex < line.length(); colIndex++) {
                     mazeGrid[rowIndex][colIndex] = (line.charAt(colIndex) == ' ') ? TileType.OPEN : TileType.WALL;
                 }
@@ -45,13 +45,13 @@ public class MazeReader {
             reader.close();
             return mazeGrid;
 
-        } catch (IOException e) { //Error interpreting the text file
+        } catch (IOException e) { //error interpreting the text file
             log.error("Error reading maze file", e);
             return null;
-        } catch (IllegalArgumentException e){ //File itself is not correctly formatted
+        } catch (IllegalArgumentException e){ //file itself is not correctly formatted
             log.error("Invalid file format: " + e.getMessage());
             System.err.println("Error: " + e.getMessage());
-        } catch (RuntimeException e) { //Unidentified Error
+        } catch (RuntimeException e) { //unidentified Error
             log.error("Unexpected error occurred", e);
         }
         return null;

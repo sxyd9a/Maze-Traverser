@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner.command;
 import java.util.Stack;
 
 public class MazeMoveHistory {
-    private final Stack<MazeMoveCommand> stack = new Stack<>();
+    private final Stack<MazeMoveCommand> stack = new Stack<>(); //push and pop commands used from this
 
     public void push(MazeMoveCommand command) {
         stack.push(command);

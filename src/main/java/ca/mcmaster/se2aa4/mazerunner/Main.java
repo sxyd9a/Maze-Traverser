@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import ca.mcmaster.se2aa4.mazerunner.command.SolveMaze;
 import ca.mcmaster.se2aa4.mazerunner.command.ValidatePath;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeReader;
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverFactory;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
@@ -25,7 +26,6 @@ public class Main {
             CommandLine cmd = argumentProcessor.parseArguments(args);
             String mazePath = cmd.getOptionValue("i");
 
-            // Default to RHS if user specified a path but no solver
             String strategy = cmd.getOptionValue("s");
             if (strategy == null && cmd.hasOption("p")) {
                 strategy = "rhs";
@@ -35,15 +35,16 @@ public class Main {
             TileType[][] maze = reader.loadMaze(mazePath);
             printMaze(maze);
 
-            int[] start = solver.determineStartPos(maze);
-            int[] finish = solver.determineFinalPos(maze);
+            int[] start = MazeUtils.findStart(maze);
+            int[] finish = MazeUtils.findEnd(maze);
+
 
             if (cmd.hasOption("p")) {
-                ValidatePath validateCommand = new ValidatePath(solver, maze, start, finish, cmd.getOptionValue("p"));
-                validateCommand.completeValidation();
+                ValidatePath validate = new ValidatePath(maze, start, finish, cmd.getOptionValue("p"));
+                validate.completeValidation();
             } else {
-                SolveMaze solveCommand = new SolveMaze(solver, maze, start, finish);
-                solveCommand.completePath();
+                SolveMaze solve = new SolveMaze(solver, maze, start, finish);
+                solve.completePath();
             }
 
         } catch (ParseException | IllegalArgumentException e) {

@@ -9,7 +9,7 @@ public class TurnLeftCommand implements MazeMoveCommand {
     }
 
     @Override
-    public void execute() {
+    public void execute() { //turning left in an rhs based search
         prevDirection = context.getDirection();
         int newDir = (prevDirection + 3) % 4;
         context.setDirection(newDir);

@@ -13,7 +13,7 @@ public class MoveForwardCommand implements MazeMoveCommand {
     }
 
     @Override
-    public void execute() {
+    public void execute() { //moving forward in an rhs based search
         prevRow = context.getRow();
         prevCol = context.getCol();
 
