@@ -1,11 +1,11 @@
 package ca.mcmaster.se2aa4.mazerunner.strategy;
 
-import ca.mcmaster.se2aa4.mazerunner.command.MazeContext;
 import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveHistory;
 import ca.mcmaster.se2aa4.mazerunner.command.MoveForwardCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.TurnLeftCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.TurnRightCommand;
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeContext;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 

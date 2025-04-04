@@ -1,5 +1,6 @@
 package ca.mcmaster.se2aa4.mazerunner.command;
 
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeContext;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 

@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.mazerunner.command;
 
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeContext;
+
 public class TurnLeftCommand implements MazeMoveCommand {
     private final MazeContext context;
     private int prevDirection;

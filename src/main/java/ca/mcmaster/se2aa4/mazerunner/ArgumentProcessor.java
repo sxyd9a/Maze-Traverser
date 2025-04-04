@@ -30,7 +30,7 @@ public class ArgumentProcessor {
 
         Option pathOption = Option.builder("p")
                 .longOpt("path")
-                .desc("User-provided path to validate (e.g., FFFF or URDL)")
+                .desc("User-provided path to validate")
                 .hasArg()
                 .argName("PATH")
                 .required(false)

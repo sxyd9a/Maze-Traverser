@@ -26,10 +26,15 @@ public class Main {
             CommandLine cmd = argumentProcessor.parseArguments(args);
             String mazePath = cmd.getOptionValue("i");
 
-            String strategy = cmd.getOptionValue("s");
-            if (strategy == null && cmd.hasOption("p")) {
-                strategy = "rhs";
+            boolean hasStrategy = cmd.hasOption("s");
+            boolean hasPath = cmd.hasOption("p");
+
+            if (!hasStrategy && !hasPath) {
+                throw new IllegalArgumentException("You must specify either a solver strategy (-s) or a path to validate (-p).");
             }
+
+            String strategy = hasStrategy ? cmd.getOptionValue("s") : "rhs";
+
 
             MazeSolverStrategy solver = MazeSolverFactory.getSolver(strategy);
             TileType[][] maze = reader.loadMaze(mazePath);
