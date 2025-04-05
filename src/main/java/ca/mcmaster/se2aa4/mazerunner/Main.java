@@ -11,6 +11,9 @@ import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverFactory;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 
+//Name: Syed Abbas
+//Project: Maze-Traverser with Design Patterns
+
 public class Main {
 
     private static final Logger log = LogManager.getLogger();
