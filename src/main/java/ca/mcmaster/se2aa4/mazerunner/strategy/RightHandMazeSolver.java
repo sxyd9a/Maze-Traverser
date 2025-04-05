@@ -15,41 +15,39 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
     public String canonicalPathSearch(TileType[][] maze, int[] startPos, int[] finalPos) {
         StringBuilder canonicalPath = new StringBuilder();
 
-        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); //start facing East
+        MazeContext context = new MazeContext(startPos[0], startPos[1], 1); //start facing east
         MazeMoveHistory history = new MazeMoveHistory();
-        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; //North, South, East, West
+        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // North, South, East, West
 
         while (!(context.getRow() == finalPos[0] && context.getCol() == finalPos[1])) { //continue until reaching end
-            //checking if going right and forward is possible
+            MazeMoveCommand currMove; //store any strategic commnds needed
+
             int rightDir = (context.getDirection() + 1) % 4;
             int rightRow = context.getRow() + directions[rightDir][0];
             int rightCol = context.getCol() + directions[rightDir][1];
 
-            if (MazeUtils.validMove(maze, rightRow, rightCol)) {
-                MazeMoveCommand turnRight = new TurnRightCommand(context);
-                MazeMoveCommand moveForward = new MoveForwardCommand(context);
-                context.executeCommand(turnRight);
-                context.executeCommand(moveForward);
-                history.push(turnRight);
-                history.push(moveForward);
-                canonicalPath.append("R").append("F");
-            } else {
-                //checking if going forward is possible
+            if (MazeUtils.validMove(maze, rightRow, rightCol)) { //checking if going right and forward is possible
+                context.executeCommand(currMove = new TurnRightCommand(context));
+                history.push(currMove);
+                canonicalPath.append("R");
+
+                context.executeCommand(currMove = new MoveForwardCommand(context));
+                history.push(currMove);
+                canonicalPath.append("F");
+            } else { //checking if going forward is possible
                 int forwardRow = context.getRow() + directions[context.getDirection()][0];
                 int forwardCol = context.getCol() + directions[context.getDirection()][1];
 
                 if (MazeUtils.validMove(maze, forwardRow, forwardCol)) {
-                    MazeMoveCommand moveForward = new MoveForwardCommand(context);
-                    context.executeCommand(moveForward);
-                    history.push(moveForward);
+                    currMove = new MoveForwardCommand(context);
                     canonicalPath.append("F");
-                } else {
-                    //resort to left turn
-                    MazeMoveCommand turnLeft = new TurnLeftCommand(context);
-                    context.executeCommand(turnLeft);
-                    history.push(turnLeft);
+                } else { //resort to left turn
+                    currMove = new TurnLeftCommand(context);
                     canonicalPath.append("L");
                 }
+
+                context.executeCommand(currMove);
+                history.push(currMove);
             }
         }
 
