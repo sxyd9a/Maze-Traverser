@@ -10,7 +10,6 @@ import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.MazeMoveHistory;
 import ca.mcmaster.se2aa4.mazerunner.command.MoveForwardCommand;
 import ca.mcmaster.se2aa4.mazerunner.command.TurnLeftCommand;
-import ca.mcmaster.se2aa4.mazerunner.command.ValidatePath;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeContext;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeUtils;
 import ca.mcmaster.se2aa4.mazerunner.maze.TileType;
@@ -21,7 +20,7 @@ public class MazeTraverserTest {
 
     @Test
     void testCanonicalPathGeneration_RHS() {
-        System.out.println("Running: testCanonicalPathGeneration_RHS");
+        System.out.println("Running: Test Canonical Path Generation (RHS)"); //testing rhs algorithm path finding logic
         TileType[][] maze = {
             {TileType.OPEN, TileType.OPEN},
             {TileType.WALL, TileType.OPEN}
@@ -34,23 +33,23 @@ public class MazeTraverserTest {
 
         assertNotNull(path);
         assertFalse(path.isEmpty());
-        System.out.println("Passed: testCanonicalPathGeneration_RHS");
+        System.out.println("Passed: Test Canonical Path Generation (RHS)");
     }
 
     @Test
-    void testFactorizedPath() {
-        System.out.println("Running: testFactorizedPath");
+    void testFactorizedPath() { //testing path factorization
+        System.out.println("Running: Test Factorized Path");
         String canonical = "FFFFLLR";
         String expected = "4F2LR";
         String actual = MazeUtils.factorizePath(canonical);
 
         assertEquals(expected, actual);
-        System.out.println("Passed: testFactorizedPath");
+        System.out.println("Passed: Test Factorized Path");
     }
 
     @Test
-    void testValidateCorrectUserPath() {
-        System.out.println("Running: testValidateCorrectUserPath");
+    void testValidateCorrectUserPath() { //testing path validation logic
+        System.out.println("Running: Test Validate Correct User Path");
         TileType[][] maze = {
             {TileType.OPEN, TileType.OPEN, TileType.OPEN},
             {TileType.WALL, TileType.WALL, TileType.OPEN}
@@ -60,12 +59,12 @@ public class MazeTraverserTest {
 
         ValidatePath validator = new ValidatePath(maze, start, finish, "2F");
         validator.completeValidation();
-        System.out.println("Passed: testValidateCorrectUserPath");
+        System.out.println("Passed: Test Validate Correct User Path");
     }
 
     @Test
-    void testValidateIncorrectUserPath() {
-        System.out.println("Running: testValidateIncorrectUserPath");
+    void testValidateIncorrectUserPath() { //testing negative case if prior test failed
+        System.out.println("Running: Test Validate Incorrect User Path");
         TileType[][] maze = {
             {TileType.OPEN, TileType.WALL, TileType.OPEN},
             {TileType.WALL, TileType.WALL, TileType.OPEN}
@@ -75,13 +74,13 @@ public class MazeTraverserTest {
 
         ValidatePath validator = new ValidatePath(maze, start, finish, "2F");
         validator.completeValidation();
-        System.out.println("Passed: testValidateIncorrectUserPath");
+        System.out.println("Passed: Test Validate Incorrect User Path");
     }
 
     @Test
-    void testUndoMoveForward() {
-        System.out.println("Running: testUndoMoveForward");
-        MazeContext context = new MazeContext(0, 0, 1); //east
+    void testUndoMoveForward() { //testing undoing of a forward command
+        System.out.println("Running: Test Undo Move Forward");
+        MazeContext context = new MazeContext(0, 0, 1); //1 for east
         MazeMoveCommand move = new MoveForwardCommand(context);
 
         move.execute();
@@ -89,26 +88,26 @@ public class MazeTraverserTest {
 
         move.undo();
         assertEquals(0, context.getCol());
-        System.out.println("Passed: testUndoMoveForward");
+        System.out.println("Passed: Test Undo Move Forward");
     }
 
     @Test
-    void testTurnLeftAndUndo() {
-        System.out.println("Running: testTurnLeftAndUndo");
-        MazeContext context = new MazeContext(0, 0, 1); //east
+    void testTurnLeftAndUndo() { //testing undoing of a left turn command
+        System.out.println("Running: Test Turn Left And Undo");
+        MazeContext context = new MazeContext(0, 0, 1); 
         MazeMoveCommand turnLeft = new TurnLeftCommand(context);
 
         turnLeft.execute();
-        assertEquals(0, context.getDirection()); //north
+        assertEquals(0, context.getDirection()); 
 
         turnLeft.undo();
-        assertEquals(1, context.getDirection()); //east
-        System.out.println("Passed: testTurnLeftAndUndo");
+        assertEquals(1, context.getDirection()); 
+        System.out.println("Passed: Test Turn Left And Undo");
     }
 
     @Test
-    void testCanonicalPath_BFS() {
-        System.out.println("Running: testCanonicalPath_BFS");
+    void testCanonicalGenerationPath_BFS() { //testing bfs algorithm path finding
+        System.out.println("Running: Test Canonical Path Generation (BFS)");
         TileType[][] maze = {
             {TileType.OPEN, TileType.OPEN},
             {TileType.WALL, TileType.OPEN}
@@ -121,26 +120,27 @@ public class MazeTraverserTest {
 
         assertNotNull(path);
         assertTrue(path.matches("[FLR]+"));
-        System.out.println("Passed: testCanonicalPath_BFS");
+        System.out.println("Passed: Test Canonical Path Generation (BFS)");
     }
 
+    //testing impossible move in a maze with 1 tile
     @Test
-    void testInvalidOutOfBoundsMove() {
-        System.out.println("Running: testInvalidOutOfBoundsMove");
+    void testInvalidOutOfBoundsMove() { 
+        System.out.println("Running: Test Invalid Out Of Bounds Move");
         TileType[][] maze = {
             {TileType.OPEN}
         };
-        MazeContext context = new MazeContext(0, 0, 1); //east
+        MazeContext context = new MazeContext(0, 0, 1); 
         MazeMoveCommand move = new MoveForwardCommand(context);
 
         move.execute();
         assertFalse(MazeUtils.validMove(maze, context.getRow(), context.getCol()));
-        System.out.println("Passed: testInvalidOutOfBoundsMove");
+        System.out.println("Passed: Test Invalid Out Of Bounds Move");
     }
 
     @Test
-    void testStartIsFinish() {
-        System.out.println("Running: testStartIsFinish");
+    void testStartIsFinish() { //testing the edge case where the start is the same as the end location
+        System.out.println("Running: Test Start To Finish");
         TileType[][] maze = {
             {TileType.OPEN}
         };
@@ -151,12 +151,12 @@ public class MazeTraverserTest {
         String path = solver.canonicalPathSearch(maze, start, finish);
 
         assertEquals("", path);
-        System.out.println("Passed: testStartIsFinish");
+        System.out.println("Passed: Test Start To Finish");
     }
 
     @Test
-    void testHistoryStackPushPop() {
-        System.out.println("Running: testHistoryStackPushPop");
+    void testHistoryStackPushPop() { //testing the command stack object
+        System.out.println("Running: Test History Command Stack Push Pop");
         MazeMoveHistory history = new MazeMoveHistory();
         MazeContext context = new MazeContext(0, 0, 1);
         MazeMoveCommand move = new MoveForwardCommand(context);
@@ -167,6 +167,6 @@ public class MazeTraverserTest {
         assertFalse(history.isEmpty());
         history.pop().undo();
         assertEquals(0, context.getCol());
-        System.out.println("Passed: testHistoryStackPushPop");
+        System.out.println("Passed: Test History Command Stack Push Pop");
     }
 }
