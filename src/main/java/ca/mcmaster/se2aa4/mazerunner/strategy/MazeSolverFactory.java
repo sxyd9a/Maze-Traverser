@@ -3,19 +3,15 @@ package ca.mcmaster.se2aa4.mazerunner.strategy;
 public class MazeSolverFactory {
 
     public static MazeSolverStrategy getSolver(String strategyName) {
-        if (strategyName == null) { //raise exception when no strategy is selected
+        if (strategyName == null) {
             throw new IllegalArgumentException("Solver strategy must be specified.");
         }
 
-        //if user wants to find/check path using rhs algorithm
-        if (strategyName.equalsIgnoreCase("rhs")) {
-            return new RightHandMazeSolver();
-        //if user wants to find/check path using bfs algorithm
-        } else if (strategyName.equalsIgnoreCase("bfs")) {
-            return new BFSMazeSolver();
-        }
+        SolverType type = SolverType.fromString(strategyName);
 
-        //raise exception when unavailable strategy is selected
-        throw new IllegalArgumentException("Unknown solver strategy: " + strategyName);
+        return switch (type) {
+            case RHS -> new RightHandMazeSolver(); //if user wants to find path using rhs algorithm
+            case BFS -> new BFSMazeSolver(); //if user wants to find path using bfs algorithm
+        };
     }
 }

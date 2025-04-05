@@ -34,6 +34,7 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
                 context.executeCommand(currMove = new MoveForwardCommand(context));
                 history.push(currMove);
                 canonicalPath.append("F");
+
             } else { //checking if going forward is possible
                 int forwardRow = context.getRow() + directions[context.getDirection()][0];
                 int forwardCol = context.getCol() + directions[context.getDirection()][1];
@@ -41,6 +42,7 @@ public class RightHandMazeSolver implements MazeSolverStrategy {
                 if (MazeUtils.validMove(maze, forwardRow, forwardCol)) {
                     currMove = new MoveForwardCommand(context);
                     canonicalPath.append("F");
+                    
                 } else { //resort to left turn
                     currMove = new TurnLeftCommand(context);
                     canonicalPath.append("L");

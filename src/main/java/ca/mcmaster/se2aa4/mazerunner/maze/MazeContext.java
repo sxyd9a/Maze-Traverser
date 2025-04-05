@@ -39,7 +39,7 @@ public class MazeContext {
         this.direction = direction;
     }
 
-    //execute command using this context
+    //execute command using the current state of the maze
     public boolean executeCommand(MazeMoveCommand command) {
         command.execute();
         return true; //
