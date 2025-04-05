@@ -12,7 +12,9 @@ import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverFactory;
 import ca.mcmaster.se2aa4.mazerunner.strategy.MazeSolverStrategy;
 
 //Name: Syed Abbas
+//Date: April 4th, 2025
 //Project: Maze-Traverser with Design Patterns
+//Goal: Boost understanding of Command and Factory Design Patterns
 
 public class Main {
 
